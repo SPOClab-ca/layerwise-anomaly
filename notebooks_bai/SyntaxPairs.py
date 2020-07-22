@@ -62,7 +62,7 @@ data[:5]
 wiki_sents[:5]
 
 
-# ## Load BERT
+# ## Load RoBERTa
 
 # In[17]:
 
