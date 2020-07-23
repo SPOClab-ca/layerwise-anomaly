@@ -3,8 +3,11 @@
 
 # # Distribution of cosine distance for minimal syntax pairs
 
-# In[11]:
+# In[1]:
 
+
+import sys
+sys.path.append('../')
 
 from transformers import AutoTokenizer, AutoModel
 import torch
@@ -17,7 +20,11 @@ import pickle
 from scipy.spatial.distance import cosine
 import seaborn as sns
 
+import src.sent_encoder
+
 get_ipython().run_line_magic('matplotlib', 'inline')
+get_ipython().run_line_magic('load_ext', 'autoreload')
+get_ipython().run_line_magic('autoreload', '2')
 
 
 # ## Load sentence pairs
@@ -35,7 +42,7 @@ with open('../data/sents.pkl', 'rb') as f:
   data = list(data)
 
 
-# In[8]:
+# In[3]:
 
 
 # https://wortschatz.uni-leipzig.de/en/download/english
@@ -44,53 +51,33 @@ with open('../data/leipzig_wikipedia.txt') as f:
   wiki_sents = f.read().split('\n')[:-1]
 
 
-# In[9]:
+# In[4]:
 
 
 len(data)
 
 
-# In[8]:
+# In[5]:
 
 
 data[:5]
 
 
-# In[10]:
+# In[6]:
 
 
 wiki_sents[:5]
 
 
-# ## Load RoBERTa
-
-# In[17]:
+# In[7]:
 
 
-model_name = 'roberta-base'
-bert_tokenizer = AutoTokenizer.from_pretrained(model_name)
-bert_model = AutoModel.from_pretrained(model_name)
-
-
-# In[15]:
-
-
-def evaluate_contextual_diff(pair):
-    source, target = pair[0], pair[1]
-    src_ids = torch.tensor(bert_tokenizer.encode(source)).unsqueeze(0)
-    src_vec = bert_model(src_ids)[0].mean(dim=1)[0]  # (768,) torch.tensor
-    
-    tgt_ids = torch.tensor(bert_tokenizer.encode(target)).unsqueeze(0)
-    tgt_vec = bert_model(tgt_ids)[0].mean(dim=1)[0]
-    
-    d_emb = len(src_vec)  # 768
-    diff = src_vec - tgt_vec
-    return diff # 768-dimensional torch.tensor
+enc = src.sent_encoder.SentEncoder()
 
 
 # ## Wikipedia as control sentences
 
-# In[29]:
+# In[8]:
 
 
 wiki_vecs = []
@@ -98,11 +85,11 @@ for i in range(300):
   s1 = random.choice(wiki_sents)
   s2 = random.choice(wiki_sents)
   if s1 == s2: continue
-  wiki_vecs.append(evaluate_contextual_diff((s1, s2)).detach().numpy())
+  wiki_vecs.append(enc.evaluate_contextual_diff((s1, s2)).detach().numpy())
 wiki_vecs = np.stack(wiki_vecs)
 
 
-# In[30]:
+# In[9]:
 
 
 wiki_cosine_distances = []
@@ -113,13 +100,13 @@ for i in range(len(wiki_vecs)):
 
 # ## Evaluate and plot
 
-# In[21]:
+# In[10]:
 
 
-vecs = np.stack([evaluate_contextual_diff(pair).detach().numpy() for pair in data])
+vecs = np.stack([enc.evaluate_contextual_diff(pair).detach().numpy() for pair in data])
 
 
-# In[22]:
+# In[11]:
 
 
 cosine_distances = []
@@ -134,15 +121,16 @@ for i in range(len(vecs)):
     }))
 
 
-# In[23]:
+# In[12]:
 
 
 cosine_distances = pd.DataFrame(cosine_distances)
 
 
-# In[36]:
+# In[14]:
 
 
+model_name = 'roberta-base'
 sns.distplot(cosine_distances.cosdist, bins=40, label='dobj/iobj pairs')
 sns.distplot(wiki_cosine_distances, bins=40, label='random wikipedia sentences')
 plt.title(f"Using model: {model_name}")
@@ -150,13 +138,13 @@ plt.legend()
 plt.show()
 
 
-# In[25]:
+# In[15]:
 
 
 np.mean(cosine_distances.cosdist)
 
 
-# In[33]:
+# In[16]:
 
 
 np.mean(wiki_cosine_distances)
@@ -166,13 +154,13 @@ np.mean(wiki_cosine_distances)
 # 
 # Some sentences seem questionable: "The man took the dog a walk".
 
-# In[55]:
+# In[17]:
 
 
 cosine_distances.sort_values('cosdist').head(5)
 
 
-# In[58]:
+# In[18]:
 
 
 cosine_distances.sort_values('cosdist', ascending=False).head(5)
