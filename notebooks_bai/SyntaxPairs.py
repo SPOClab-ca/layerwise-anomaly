@@ -80,13 +80,13 @@ enc = src.sent_encoder.SentEncoder()
 # In[8]:
 
 
-wiki_vecs = []
+wiki_pairs = []
 for i in range(300):
   s1 = random.choice(wiki_sents)
   s2 = random.choice(wiki_sents)
   if s1 == s2: continue
-  wiki_vecs.append(enc.evaluate_contextual_diff((s1, s2)).detach().numpy())
-wiki_vecs = np.stack(wiki_vecs)
+  wiki_pairs.append((s1, s2))
+wiki_vecs = enc.evaluate_contextual_diff(wiki_pairs)
 
 
 # In[9]:
@@ -103,7 +103,7 @@ for i in range(len(wiki_vecs)):
 # In[10]:
 
 
-vecs = np.stack([enc.evaluate_contextual_diff(pair).detach().numpy() for pair in data])
+vecs = enc.evaluate_contextual_diff(data)
 
 
 # In[11]:
@@ -127,7 +127,7 @@ for i in range(len(vecs)):
 cosine_distances = pd.DataFrame(cosine_distances)
 
 
-# In[14]:
+# In[13]:
 
 
 model_name = 'roberta-base'
@@ -138,13 +138,13 @@ plt.legend()
 plt.show()
 
 
-# In[15]:
+# In[14]:
 
 
 np.mean(cosine_distances.cosdist)
 
 
-# In[16]:
+# In[15]:
 
 
 np.mean(wiki_cosine_distances)
@@ -154,13 +154,13 @@ np.mean(wiki_cosine_distances)
 # 
 # Some sentences seem questionable: "The man took the dog a walk".
 
-# In[17]:
+# In[16]:
 
 
 cosine_distances.sort_values('cosdist').head(5)
 
 
-# In[18]:
+# In[17]:
 
 
 cosine_distances.sort_values('cosdist', ascending=False).head(5)
