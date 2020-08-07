@@ -1,5 +1,6 @@
 import os
 import random
+import pandas as pd
 
 class SentPairGenerator():
   """Methods to generate various pairs of sentences"""
@@ -25,3 +26,19 @@ class SentPairGenerator():
       sentences.append((s1, s2))
 
     return sentences
+  
+
+  def get_osterhout_nicol(self, anomaly_type):
+    """
+    90 sentences from Osterhout and Nicol (1999). Anomaly can be 'syntactic' or 'semantic'.
+    """
+    df = pd.read_csv(os.path.join(self.data_dir, 'osterhout-nicol.csv'))
+
+    if anomaly_type == 'syntactic':
+      df = df[['original_sentence', 'syntactic_anomaly']]
+    elif anomaly_type == 'semantic':
+      df = df[['original_sentence', 'semantic_anomaly']]
+    else:
+      assert(False)
+
+    return [tuple(x) for x in df.to_numpy()]

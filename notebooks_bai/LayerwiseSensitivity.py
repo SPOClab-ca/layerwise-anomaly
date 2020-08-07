@@ -11,13 +11,9 @@
 import sys
 sys.path.append('../')
 
-from transformers import AutoTokenizer, AutoModel
-import torch
 import numpy as np
 import pandas as pd
-import os, sys, time, re
 import matplotlib.pyplot as plt
-import random
 import pickle
 from scipy.spatial.distance import cosine
 import seaborn as sns
@@ -66,50 +62,46 @@ enc = src.sent_encoder.SentEncoder()
 # In[6]:
 
 
-distances = enc.get_layer_distance_df(data)
+def plot_distances(sents, task_name):
+  distances = enc.get_layer_distance_df(sents)
+  sns.lineplot(x='layer', y='dist', data=distances, err_style='bars', ci=95)
+  plt.title(f"Sentence embedding distance for pairs: {task_name}.")
+  plt.ylim(0)
+  plt.show()
 
 
 # In[7]:
 
 
-model_name = 'roberta-base'
-sns.boxplot(x='layer', y='dist', data=distances)
-plt.title(f"Sentence embedding distance for dobj/iobj pairs.\nmodel: {model_name}")
-plt.ylim(0)
-plt.show()
+plot_distances(data, 'dative alternation')
 
 
 # In[8]:
 
 
 wiki_sents = sentgen.get_wikipedia()
-wiki_distances = enc.get_layer_distance_df(wiki_sents)
+plot_distances(wiki_sents, 'random wikipedia')
 
+
+# ## Combined plot
+distances['dataset'] = 'dobj/iobj'
+wiki_distances['dataset'] = 'random wiki'
+combined_df = pd.concat([distances, wiki_distances])sns.barplot(x='layer', y='dist', hue='dataset', data=combined_df)
+plt.title(f"model: {model_name}")
+plt.ylim(0)
+plt.show()
+# ## Other sentence types
 
 # In[9]:
 
 
-sns.boxplot(x='layer', y='dist', data=wiki_distances)
-plt.title(f"Sentence embedding distance for wiki pairs.\nmodel: {model_name}")
-plt.ylim(0)
-plt.show()
+sents = sentgen.get_osterhout_nicol('syntactic')
+plot_distances(sents, 'osterhout-nicol syntactic')
 
-
-# ## Combined plot
 
 # In[10]:
 
 
-distances['dataset'] = 'dobj/iobj'
-wiki_distances['dataset'] = 'random wiki'
-combined_df = pd.concat([distances, wiki_distances])
-
-
-# In[11]:
-
-
-sns.barplot(x='layer', y='dist', hue='dataset', data=combined_df)
-plt.title(f"model: {model_name}")
-plt.ylim(0)
-plt.show()
+sents = sentgen.get_osterhout_nicol('semantic')
+plot_distances(sents, 'osterhout-nicol semantic')
 

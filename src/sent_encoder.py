@@ -48,7 +48,6 @@ class SentEncoder:
     """Get Euclidean distance for list of sentence pairs, for all layers, in a dataframe."""
     distances = []
     for layer in range(13):
-      print('Processing layer:', layer)
       vecs = self.evaluate_contextual_diff(sentence_pairs, layer=layer)
 
       for ix in range(len(sentence_pairs)):
