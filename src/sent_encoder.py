@@ -1,5 +1,6 @@
 from transformers import AutoTokenizer, AutoModel
 import numpy as np
+import pandas as pd
 import torch
 
 BATCH_SIZE = 32
@@ -36,6 +37,24 @@ class SentEncoder:
       src_sent_vecs = self._mean_without_pad(src_ids, src_vecs)
       tgt_sent_vecs = self._mean_without_pad(tgt_ids, tgt_vecs)
       diff_sent_vecs = src_sent_vecs - tgt_sent_vecs
-      result.append(diff_sent_vecs.cpu().detach().numpy())
+      result.append(diff_sent_vecs.detach().cpu().numpy())
 
     return np.vstack(result)
+
+
+  def get_layer_distance_df(self, sentence_pairs):
+    """Get Euclidean distance for list of sentence pairs, for all layers, in a dataframe."""
+    distances = []
+    for layer in range(13):
+      print('Processing layer:', layer)
+      vecs = self.evaluate_contextual_diff(sentence_pairs, layer=layer)
+
+      for ix in range(len(sentence_pairs)):
+        dist = np.linalg.norm(vecs[ix])
+        distances.append(pd.Series({
+          'layer': layer,
+          'dist': dist,
+          'sent1': sentence_pairs[ix][0],
+          'sent2': sentence_pairs[ix][1],
+        }))
+    return pd.DataFrame(distances)

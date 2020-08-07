@@ -5,7 +5,7 @@
 # 
 # See how much different layers are sensitive to (1) pairs with dobj/iobj change, and (2) random sentence pairs.
 
-# In[2]:
+# In[1]:
 
 
 import sys
@@ -23,6 +23,7 @@ from scipy.spatial.distance import cosine
 import seaborn as sns
 
 import src.sent_encoder
+import src.sentpair_generator
 
 get_ipython().run_line_magic('matplotlib', 'inline')
 get_ipython().run_line_magic('load_ext', 'autoreload')
@@ -31,7 +32,7 @@ get_ipython().run_line_magic('autoreload', '2')
 
 # ## Load sentence pairs
 
-# In[3]:
+# In[2]:
 
 
 with open('../data/sents.pkl', 'rb') as f:
@@ -39,47 +40,30 @@ with open('../data/sents.pkl', 'rb') as f:
   data = list(data)
 
 
-# In[4]:
+# In[3]:
 
 
 # https://wortschatz.uni-leipzig.de/en/download/english
 # Wikipedia, 2016, 10K sentences
-with open('../data/leipzig_wikipedia.txt') as f:
-  wiki_sents = f.read().split('\n')[:-1]
+sentgen = src.sentpair_generator.SentPairGenerator()
+wiki_sents = sentgen.get_wikipedia()
 
 
-# In[5]:
+# In[4]:
 
 
 len(data)
 
 
-# In[11]:
+# In[5]:
 
 
 enc = src.sent_encoder.SentEncoder()
 
 
 # ## Generate boxplots
-
+distances = enc.get_layer_distance_df(data)
 # In[ ]:
-
-
-distances = []
-for layer in range(13):
-  print('Processing layer:', layer)
-  for sent_pair in data:
-    dist = np.linalg.norm(enc.evaluate_contextual_diff(sent_pair, layer=layer).cpu().detach().numpy())
-    distances.append(pd.Series({
-      'layer': layer,
-      'dist': dist,
-      'sent1': sent_pair[0],
-      'sent2': sent_pair[1],
-    }))
-distances = pd.DataFrame(distances)
-
-
-# In[23]:
 
 
 model_name = 'roberta-base'
@@ -89,27 +73,14 @@ plt.ylim(0)
 plt.show()
 
 
-# In[22]:
+# In[6]:
 
 
-wiki_distances = []
-for layer in range(13):
-  print('Processing layer:', layer)
-  for i in range(300):
-    s1 = random.choice(wiki_sents)
-    s2 = random.choice(wiki_sents)
-    if s1 == s2: continue
-    dist = np.linalg.norm(enc.evaluate_contextual_diff((s1, s2), layer=layer).cpu().detach().numpy())
-    wiki_distances.append(pd.Series({
-      'layer': layer,
-      'dist': dist,
-      'sent1': sent_pair[0],
-      'sent2': sent_pair[1],
-    }))
-wiki_distances = pd.DataFrame(wiki_distances)
+wiki_sents = sentgen.get_wikipedia()
+wiki_distances = enc.get_layer_distance_df(wiki_sents)
 
 
-# In[24]:
+# In[7]:
 
 
 sns.boxplot(x='layer', y='dist', data=wiki_distances)
@@ -120,7 +91,7 @@ plt.show()
 
 # ## Combined plot
 
-# In[32]:
+# In[ ]:
 
 
 distances['dataset'] = 'dobj/iobj'
@@ -128,7 +99,7 @@ wiki_distances['dataset'] = 'random wiki'
 combined_df = pd.concat([distances, wiki_distances])
 
 
-# In[33]:
+# In[ ]:
 
 
 sns.barplot(x='layer', y='dist', hue='dataset', data=combined_df)
