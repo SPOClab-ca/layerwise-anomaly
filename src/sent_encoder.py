@@ -31,8 +31,10 @@ class SentEncoder:
       src_ids = torch.tensor(self.auto_tokenizer(src_sentences, padding=True)['input_ids']).cuda()
       tgt_ids = torch.tensor(self.auto_tokenizer(tgt_sentences, padding=True)['input_ids']).cuda()
 
-      src_vecs = self.auto_model(src_ids, attention_mask=(src_ids != 1), output_hidden_states=True)[2][layer]
-      tgt_vecs = self.auto_model(tgt_ids, attention_mask=(tgt_ids != 1), output_hidden_states=True)[2][layer]
+      # Needed to avoid leaking cuda memory
+      with torch.no_grad():
+        src_vecs = self.auto_model(src_ids, attention_mask=(src_ids != 1), output_hidden_states=True)[2][layer]
+        tgt_vecs = self.auto_model(tgt_ids, attention_mask=(tgt_ids != 1), output_hidden_states=True)[2][layer]
 
       src_sent_vecs = self._mean_without_pad(src_ids, src_vecs)
       tgt_sent_vecs = self._mean_without_pad(tgt_ids, tgt_vecs)

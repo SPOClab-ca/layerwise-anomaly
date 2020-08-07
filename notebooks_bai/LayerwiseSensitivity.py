@@ -62,8 +62,14 @@ enc = src.sent_encoder.SentEncoder()
 
 
 # ## Generate boxplots
+
+# In[6]:
+
+
 distances = enc.get_layer_distance_df(data)
-# In[ ]:
+
+
+# In[7]:
 
 
 model_name = 'roberta-base'
@@ -73,14 +79,14 @@ plt.ylim(0)
 plt.show()
 
 
-# In[6]:
+# In[8]:
 
 
 wiki_sents = sentgen.get_wikipedia()
 wiki_distances = enc.get_layer_distance_df(wiki_sents)
 
 
-# In[7]:
+# In[9]:
 
 
 sns.boxplot(x='layer', y='dist', data=wiki_distances)
@@ -91,7 +97,7 @@ plt.show()
 
 # ## Combined plot
 
-# In[ ]:
+# In[10]:
 
 
 distances['dataset'] = 'dobj/iobj'
@@ -99,7 +105,7 @@ wiki_distances['dataset'] = 'random wiki'
 combined_df = pd.concat([distances, wiki_distances])
 
 
-# In[ ]:
+# In[11]:
 
 
 sns.barplot(x='layer', y='dist', hue='dataset', data=combined_df)
