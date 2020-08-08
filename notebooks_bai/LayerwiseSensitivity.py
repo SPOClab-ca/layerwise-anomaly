@@ -26,57 +26,39 @@ get_ipython().run_line_magic('load_ext', 'autoreload')
 get_ipython().run_line_magic('autoreload', '2')
 
 
-# ## Load sentence pairs
-
 # In[2]:
 
 
-with open('../data/sents.pkl', 'rb') as f:
-  data = pickle.load(f)
-  data = list(data)
-
-
-# In[3]:
-
-
-# https://wortschatz.uni-leipzig.de/en/download/english
-# Wikipedia, 2016, 10K sentences
 sentgen = src.sentpair_generator.SentPairGenerator()
-wiki_sents = sentgen.get_wikipedia()
-
-
-# In[4]:
-
-
-len(data)
-
-
-# In[5]:
-
-
 enc = src.sent_encoder.SentEncoder()
 
 
 # ## Generate boxplots
 
-# In[6]:
+# In[3]:
 
 
 def plot_distances(sents, task_name):
   distances = enc.get_layer_distance_df(sents)
+  
+  # Upper layer increase in distance (ULID) metric = max distance / max distance within layers 0-4
+  mean_distances = distances.groupby('layer').mean()
+  ulid = np.max(mean_distances.dist) / np.max(mean_distances[0:4].dist)
+  
   sns.lineplot(x='layer', y='dist', data=distances, err_style='bars', ci=95)
-  plt.title(f"Sentence embedding distance for pairs: {task_name}.")
+  plt.title(f"Using data: {task_name}.\nMax={np.max(mean_distances.dist):.3f}. Max12/max4={ulid:.3f}.")
   plt.ylim(0)
   plt.show()
 
 
-# In[7]:
+# In[5]:
 
 
-plot_distances(data, 'dative alternation')
+sents = sentgen.get_dative_alternation()
+plot_distances(sents, 'dative alternation')
 
 
-# In[8]:
+# In[6]:
 
 
 wiki_sents = sentgen.get_wikipedia()
@@ -92,16 +74,44 @@ plt.ylim(0)
 plt.show()
 # ## Other sentence types
 
-# In[9]:
+# In[7]:
 
 
 sents = sentgen.get_osterhout_nicol('syntactic')
 plot_distances(sents, 'osterhout-nicol syntactic')
 
 
-# In[10]:
+# In[8]:
 
 
 sents = sentgen.get_osterhout_nicol('semantic')
 plot_distances(sents, 'osterhout-nicol semantic')
+
+
+# In[9]:
+
+
+sents = sentgen.get_wikipedia_delete_random_word()
+plot_distances(sents, 'wiki delete random word')
+
+
+# In[10]:
+
+
+sents = sentgen.get_transitive_swap_subject()
+plot_distances(sents, 'transitive swap subject')
+
+
+# In[11]:
+
+
+sents = sentgen.get_transitive_swap_subject_object()
+plot_distances(sents, 'transitive swap subject/object')
+
+
+# In[12]:
+
+
+sents = sentgen.get_transitive_replace_determiner()
+plot_distances(sents, 'transitive replace determiner')
 

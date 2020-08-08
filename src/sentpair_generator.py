@@ -1,12 +1,25 @@
 import os
 import random
 import pandas as pd
+import pickle
+
+
+TRANSITIVE_VERBS = """knew killed attacked asked confronted approached thanked called saw
+trusted hugged liked followed interrupted begged visited warned rejected helped hated
+criticized wanted missed protected punched""".split()
+
+HUMAN_NOUNS = """man woman boy girl teacher student thief child kid soldier robot artist
+protester president drummer zombie baby teenager captain prisoner engineer pilot waiter
+doctor landlord manager worker victim employee painter priest""".split()
+
 
 class SentPairGenerator():
   """Methods to generate various pairs of sentences"""
 
   def __init__(self, data_dir='../data'):
     self.data_dir = data_dir
+    with open(os.path.join(self.data_dir, 'leipzig_wikipedia.txt')) as f:
+      self.wiki_sents = f.read().split('\n')[:-1]
 
 
   def get_wikipedia(self, limit=200):
@@ -14,18 +27,33 @@ class SentPairGenerator():
     Wikipedia, 2016, 10K sentences
     Downloaded from: https://wortschatz.uni-leipzig.de/en/download/english
     """
-    with open(os.path.join(self.data_dir, 'leipzig_wikipedia.txt')) as f:
-      wiki_sents = f.read().split('\n')[:-1]
-
     random.seed(12345)
     sentences = []
     for i in range(limit):
-      s1 = random.choice(wiki_sents)
-      s2 = random.choice(wiki_sents)
+      s1 = random.choice(self.wiki_sents)
+      s2 = random.choice(self.wiki_sents)
       if s1 == s2: continue
       sentences.append((s1, s2))
 
     return sentences
+  
+
+  def get_wikipedia_delete_random_word(self, limit=200):
+    random.seed(12345)
+    sentences = []
+    for i in range(limit):
+      s1 = random.choice(self.wiki_sents).split()
+      s2 = list(s1)
+      s2.pop(random.randrange(len(s2)))
+      sentences.append((' '.join(s1), ' '.join(s2)))
+    return sentences
+  
+
+  def get_dative_alternation(self):
+    with open('../data/dative-alternation.pkl', 'rb') as f:
+      data = pickle.load(f)
+      data = list(data)
+    return data
   
 
   def get_osterhout_nicol(self, anomaly_type):
@@ -42,3 +70,55 @@ class SentPairGenerator():
       assert(False)
 
     return [tuple(x) for x in df.to_numpy()]
+
+
+  def get_transitive_swap_subject(self, limit=200):
+    """Swap the subject with a random other word."""
+    random.seed(12345)
+    sentences = []
+    for i in range(limit):
+      vb = random.choice(TRANSITIVE_VERBS)
+      subj1 = random.choice(HUMAN_NOUNS)
+      subj2 = random.choice(HUMAN_NOUNS)
+      obj = random.choice(HUMAN_NOUNS)
+      if subj1 == subj2 or subj1 == obj or subj2 == obj:
+        continue
+
+      s1 = f"The {subj1} {vb} the {obj}."
+      s2 = f"The {subj2} {vb} the {obj}."
+      sentences.append((s1, s2))
+    return sentences
+
+
+  def get_transitive_swap_subject_object(self, limit=200):
+    """Swap the subject with the object."""
+    random.seed(12345)
+    sentences = []
+    for i in range(limit):
+      vb = random.choice(TRANSITIVE_VERBS)
+      subj = random.choice(HUMAN_NOUNS)
+      obj = random.choice(HUMAN_NOUNS)
+      if subj == obj:
+        continue
+
+      s1 = f"The {subj} {vb} the {obj}."
+      s2 = f"The {obj} {vb} the {subj}."
+      sentences.append((s1, s2))
+    return sentences
+
+
+  def get_transitive_replace_determiner(self, limit=200):
+    """Swap the determiner of the object from 'the' to 'a'."""
+    random.seed(12345)
+    sentences = []
+    for i in range(limit):
+      vb = random.choice(TRANSITIVE_VERBS)
+      subj = random.choice(HUMAN_NOUNS)
+      obj = random.choice(HUMAN_NOUNS)
+      if subj == obj:
+        continue
+
+      s1 = f"The {subj} {vb} the {obj}."
+      s2 = f"The {subj} {vb} a {obj}."
+      sentences.append((s1, s2))
+    return sentences

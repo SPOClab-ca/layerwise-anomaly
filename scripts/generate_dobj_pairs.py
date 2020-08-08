@@ -6,7 +6,7 @@ import checklist
 from checklist.editor import Editor
 import pickle
 
-VERBS = ['gave', 'sent', 'mailed', 'took', 'brought', 'showed', 'sold']
+VERBS = ['gave', 'sent', 'mailed', 'brought', 'showed', 'sold']
 
 editor = Editor()
 
