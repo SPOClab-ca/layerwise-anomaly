@@ -122,3 +122,21 @@ class SentPairGenerator():
       s2 = f"The {subj} {vb} a {obj}."
       sentences.append((s1, s2))
     return sentences
+
+
+  def get_sts_2012(self, similarity_level):
+    """
+    Sentences from SentEval 2012, train split, video caption portion. Similarity level
+    is on 0-5 scale, but consider 'low' to be <= 1, 'high' to be >= 4.
+    """
+    df = pd.read_csv(os.path.join(self.data_dir, 'sts12-vid.csv'))
+
+    if similarity_level == 'low':
+      df = df[df.sim <= 1]
+    elif similarity_level == 'high':
+      df = df[df.sim >= 4]
+    else:
+      assert(False)
+
+    df = df[['sent1', 'sent2']]
+    return [tuple(x) for x in df.to_numpy()]

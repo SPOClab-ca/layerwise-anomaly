@@ -3,7 +3,7 @@
 
 # # Layerwise Sensitivity
 # 
-# See how much different layers are sensitive to (1) pairs with dobj/iobj change, and (2) random sentence pairs.
+# See how much different layers are sensitive to a bunch of different types of sentence pairs.
 
 # In[1]:
 
@@ -51,14 +51,14 @@ def plot_distances(sents, task_name):
   plt.show()
 
 
-# In[5]:
+# In[4]:
 
 
 sents = sentgen.get_dative_alternation()
 plot_distances(sents, 'dative alternation')
 
 
-# In[6]:
+# In[5]:
 
 
 wiki_sents = sentgen.get_wikipedia()
@@ -74,44 +74,58 @@ plt.ylim(0)
 plt.show()
 # ## Other sentence types
 
-# In[7]:
+# In[6]:
 
 
 sents = sentgen.get_osterhout_nicol('syntactic')
 plot_distances(sents, 'osterhout-nicol syntactic')
 
 
-# In[8]:
+# In[7]:
 
 
 sents = sentgen.get_osterhout_nicol('semantic')
 plot_distances(sents, 'osterhout-nicol semantic')
 
 
-# In[9]:
+# In[8]:
 
 
 sents = sentgen.get_wikipedia_delete_random_word()
 plot_distances(sents, 'wiki delete random word')
 
 
-# In[10]:
+# In[9]:
 
 
 sents = sentgen.get_transitive_swap_subject()
 plot_distances(sents, 'transitive swap subject')
 
 
-# In[11]:
+# In[10]:
 
 
 sents = sentgen.get_transitive_swap_subject_object()
 plot_distances(sents, 'transitive swap subject/object')
 
 
-# In[12]:
+# In[11]:
 
 
 sents = sentgen.get_transitive_replace_determiner()
 plot_distances(sents, 'transitive replace determiner')
+
+
+# In[17]:
+
+
+sents = sentgen.get_sts_2012('high')
+plot_distances(sents, 'STS-2012, high semantic similarity')
+
+
+# In[14]:
+
+
+sents = sentgen.get_sts_2012('low')
+plot_distances(sents, 'STS-2012, low semantic similarity')
 
