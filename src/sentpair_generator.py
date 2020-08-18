@@ -12,6 +12,14 @@ HUMAN_NOUNS = """man woman boy girl teacher student thief child kid soldier robo
 protester president drummer zombie baby teenager captain prisoner engineer pilot waiter
 doctor landlord manager worker victim employee painter priest""".split()
 
+# For the ba-construction, verb must have a state-changing effect on the object.
+CHINESE_TRANSITIVE_VERBS = """感动 骗 骂 吓 打 害 震惊 忘 揍 救 坑 搞 气 蒙 忘记 抓住 杀 举报
+通知 联络 帮 回复 采访 放 投诉 警告 批评""".split()
+
+CHINESE_HUMAN_NOUNS = """工程师 留学生 医生 律师 老师 农民 作家 教师 记者 编辑 基督徒 学生
+设计师 会计 科学家 公务员 博士 护士 学者 大学生 教授 演员 艺术家 党员 人 移民 警察 司机 工人
+企业家 残疾人 保安 歌手 专家 高手 创业者 男人 女人 女孩 孩子 外国人 老人""".split()
+
 
 class SentPairGenerator():
   """Methods to generate various pairs of sentences"""
@@ -140,3 +148,50 @@ class SentPairGenerator():
 
     df = df[['sent1', 'sent2']]
     return [tuple(x) for x in df.to_numpy()]
+
+
+  def get_paws(self, is_paraphrase):
+    """
+    Sentences from PAWS-X (https://github.com/google-research-datasets/paws/tree/master/pawsx)
+    Label = 1 if paraphrase, 0 if not paraphrase
+    """
+    df = pd.read_csv(os.path.join(self.data_dir, 'paws-x-dev.tsv'), delimiter='\t')
+
+    if is_paraphrase:
+      df = df[df.label == 1]
+    else:
+      df = df[df.label == 0]
+
+    df = df[['sentence1', 'sentence2']]
+    return [tuple(x) for x in df.to_numpy()]
+  
+
+  def get_chinese_news(self, limit=200):
+    with open(os.path.join(self.data_dir, 'chinese-news.txt')) as f:
+      sents = f.read().split('\n')[:-1]
+
+    random.seed(12345)
+    sentences = []
+    for i in range(limit):
+      s1 = random.choice(sents)
+      s2 = random.choice(sents)
+      if s1 == s2: continue
+      sentences.append((s1, s2))
+
+    return sentences
+
+
+  def get_chinese_ba_alternation(self, limit=200):
+    random.seed(12345)
+    sentences = []
+    for i in range(limit):
+      vb = random.choice(CHINESE_TRANSITIVE_VERBS)
+      subj = random.choice(CHINESE_HUMAN_NOUNS)
+      obj = random.choice(CHINESE_HUMAN_NOUNS)
+      if subj == obj:
+        continue
+
+      s1 = f"{subj}{vb}了{obj}"
+      s2 = f"{subj}把{obj}{vb}了"
+      sentences.append((s1, s2))
+    return sentences

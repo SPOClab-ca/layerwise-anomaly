@@ -116,16 +116,53 @@ sents = sentgen.get_transitive_replace_determiner()
 plot_distances(sents, 'transitive replace determiner')
 
 
-# In[17]:
+# In[12]:
 
 
 sents = sentgen.get_sts_2012('high')
 plot_distances(sents, 'STS-2012, high semantic similarity')
 
 
-# In[14]:
+# In[13]:
 
 
 sents = sentgen.get_sts_2012('low')
 plot_distances(sents, 'STS-2012, low semantic similarity')
+
+
+# In[14]:
+
+
+sents = sentgen.get_paws(True)
+plot_distances(sents, 'PAWS, paraphrase')
+
+
+# In[15]:
+
+
+sents = sentgen.get_paws(False)
+plot_distances(sents, 'PAWS, not paraphrase')
+
+
+# ## Chinese examples
+
+# In[ ]:
+
+
+enc = src.sent_encoder.SentEncoder(model_name='clue/roberta_chinese_base')
+sentgen = src.sentpair_generator.SentPairGenerator()
+
+
+# In[17]:
+
+
+sents = sentgen.get_chinese_news()
+plot_distances(sents, 'Chinese, random news')
+
+
+# In[19]:
+
+
+sents = sentgen.get_chinese_ba_alternation()
+plot_distances(sents, 'Chinese, ba-alternation')
 

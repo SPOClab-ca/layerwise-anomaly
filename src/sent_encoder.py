@@ -1,3 +1,4 @@
+import transformers
 from transformers import AutoTokenizer, AutoModel
 import numpy as np
 import pandas as pd
@@ -8,7 +9,10 @@ BATCH_SIZE = 32
 class SentEncoder:
   def __init__(self, model_name='roberta-base'):
     self.model_name = model_name
-    self.auto_tokenizer = AutoTokenizer.from_pretrained(model_name)
+    if 'chinese' in model_name:
+      self.auto_tokenizer = transformers.BertTokenizer.from_pretrained(model_name)
+    else:
+      self.auto_tokenizer = AutoTokenizer.from_pretrained(model_name)
     self.auto_model = AutoModel.from_pretrained(model_name).cuda()
 
 
