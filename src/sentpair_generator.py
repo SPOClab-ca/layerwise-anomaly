@@ -13,7 +13,7 @@ protester president drummer zombie baby teenager captain prisoner engineer pilot
 doctor landlord manager worker victim employee painter priest""".split()
 
 # For the ba-construction, verb must have a state-changing effect on the object.
-CHINESE_TRANSITIVE_VERBS = """感动 骗 骂 吓 打 害 震惊 忘 揍 救 坑 搞 气 蒙 忘记 抓住 杀 举报
+CHINESE_TRANSITIVE_VERBS = """感动 骗 骂 吓 打 害 震惊 忘 揍 救 坑 气 蒙 忘记 抓住 杀 举报
 通知 联络 帮 回复 采访 放 投诉 警告 批评""".split()
 
 CHINESE_HUMAN_NOUNS = """工程师 留学生 医生 律师 老师 农民 作家 教师 记者 编辑 基督徒 学生
@@ -191,7 +191,7 @@ class SentPairGenerator():
       if subj == obj:
         continue
 
-      s1 = f"{subj}{vb}了{obj}"
-      s2 = f"{subj}把{obj}{vb}了"
+      s1 = f"{subj}{vb}了{obj}。"
+      s2 = f"{subj}把{obj}{vb}了。"
       sentences.append((s1, s2))
     return sentences
