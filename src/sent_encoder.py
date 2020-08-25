@@ -48,6 +48,25 @@ class SentEncoder:
     return np.vstack(result)
 
 
+  def contextual_token_vecs(self, sents, layer=-2):
+    """Get one embedding per token of sentence, stacked in a single array. Ignore special tokens."""
+    result = []
+    for batch_ix in range(0, len(sents), BATCH_SIZE):
+      batch_sentences = sents[batch_ix : batch_ix+BATCH_SIZE]
+
+      ids = torch.tensor(self.auto_tokenizer(batch_sentences, padding=True)['input_ids']).cuda()
+
+      with torch.no_grad():
+        vecs = self.auto_model(ids, attention_mask=(ids != 1), output_hidden_states=True)[2][layer]
+
+      for sent_ix in range(ids.shape[0]):
+        for tok_ix in range(ids.shape[1]):
+          if ids[sent_ix, tok_ix] not in self.auto_tokenizer.all_special_ids:
+            result.append(vecs[sent_ix, tok_ix, :].detach().cpu().numpy())
+
+    return np.vstack(result)
+
+
   def get_layer_distance_df(self, sentence_pairs):
     """Get Euclidean distance for list of sentence pairs, for all layers, in a dataframe."""
     distances = []
