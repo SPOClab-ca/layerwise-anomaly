@@ -16,6 +16,7 @@ import random
 import sklearn.mixture
 
 import src.sent_encoder
+import src.sentpair_generator
 
 get_ipython().run_line_magic('matplotlib', 'inline')
 get_ipython().run_line_magic('load_ext', 'autoreload')
@@ -56,7 +57,7 @@ enc = src.sent_encoder.SentEncoder()
 bnc_vecs = enc.contextual_token_vecs(bnc_sentences, layer=-2)
 
 
-# ## Train GMM, test on ungrammatical sentences
+# ## Train GMM
 
 # In[6]:
 
@@ -80,17 +81,54 @@ def infer_new_sentence(sent):
 # In[8]:
 
 
-infer_new_sentence("The cats won't eating the food that Mary gives them.")
+infer_new_sentence("The student laughs.")
 
 
 # In[9]:
 
 
-infer_new_sentence("The student laughs.")
+infer_new_sentence("The student laugh.")
 
+
+# ## Evaluate on Osterhout / Nicol data
 
 # In[10]:
 
 
-infer_new_sentence("The student laugh.")
+sentgen = src.sentpair_generator.SentPairGenerator()
+
+
+# In[11]:
+
+
+def gmm_score(sent):
+  ids = [x for x in enc.auto_tokenizer(sent)['input_ids'] if x not in enc.auto_tokenizer.all_special_ids]
+  sent_vecs = enc.contextual_token_vecs([sent])
+  assert len(ids) == sent_vecs.shape[0]
+  
+  score = 0
+  for i in range(sent_vecs.shape[0]):
+    score += gmm.score([sent_vecs[i]])
+  return score
+    
+    
+# Assume first of pair is the correct one
+def eval_sent_pairs(sentpairs):
+  got_right = 0
+  for correct_sent, incorrect_sent in sentpairs:
+    if gmm_score(correct_sent) > gmm_score(incorrect_sent):
+      got_right += 1
+  print(got_right / len(sentpairs))
+
+
+# In[12]:
+
+
+eval_sent_pairs(sentgen.get_osterhout_nicol(anomaly_type='syntactic'))
+
+
+# In[13]:
+
+
+eval_sent_pairs(sentgen.get_osterhout_nicol(anomaly_type='semantic'))
 
