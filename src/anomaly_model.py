@@ -15,24 +15,24 @@ class AnomalyModel:
     self.gmm.fit(vecs)
 
 
-  def gmm_score(self, sent, verbose=False):
+  def gmm_score(self, sent):
     ids = [x for x in self.enc.auto_tokenizer(sent)['input_ids']
              if x not in self.enc.auto_tokenizer.all_special_ids]
-    sent_vecs = self.enc.contextual_token_vecs([sent])
+    sent_vecs = self.enc.contextual_token_vecs([sent], layer=self.layer)
     assert len(ids) == sent_vecs.shape[0]
     
-    score = 0
+    scores = []
+    tokens = []
     for i in range(sent_vecs.shape[0]):
-      if verbose:
-        print(self.enc.auto_tokenizer.decode(ids[i]), self.gmm.score([sent_vecs[i]]))
-      score += self.gmm.score([sent_vecs[i]])
-    return score
+      tokens.append(self.enc.auto_tokenizer.decode(ids[i]))
+      scores.append(self.gmm.score([sent_vecs[i]]))
+    return tokens, scores
 
 
   def eval_sent_pairs(self, sentpairs):
     """Calculate accuracy score, assuming first pair is correct one"""
     got_right = 0
     for correct_sent, incorrect_sent in sentpairs:
-      if self.gmm_score(correct_sent) > self.gmm_score(incorrect_sent):
+      if sum(self.gmm_score(correct_sent)[1]) > sum(self.gmm_score(incorrect_sent)[1]):
         got_right += 1
     return got_right / len(sentpairs)
