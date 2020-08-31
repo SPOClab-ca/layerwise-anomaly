@@ -13,16 +13,16 @@ class AnomalyModel:
     self.gmms = []
 
     _, all_vecs = self.enc.contextual_token_vecs(train_sentences)
-    import pdb; pdb.set_trace()
     for layer in range(13):
-      sent_vecs = [vs[layer] for vs in all_vecs]
+      sent_vecs = np.vstack([vs[:,layer,:] for vs in all_vecs])
       gmm = sklearn.mixture.GaussianMixture()
       gmm.fit(sent_vecs)
       self.gmms.append(gmm)
 
 
   def gmm_score(self, sent):
-    """Returns (tokens, scores)"""
+    """Returns (tokens, scores), where
+    scores is np.array(num layers, |S|)"""
     tokens, vecs = self.enc.contextual_token_vecs([sent])
     tokens = tokens[0]
     vecs = vecs[0]
@@ -32,15 +32,17 @@ class AnomalyModel:
     for layer in range(13):
       scores = []
       for i in range(vecs.shape[0]):
-        scores.append(self.gmms[layer].score([vecs[i]]))
+        scores.append(self.gmms[layer].score([vecs[i, layer, :]]))
       layer_scores.append(scores)
-    return tokens, scores
+    return tokens, np.array(layer_scores)
 
 
-  def eval_sent_pairs(self, sentpairs):
+  def eval_sent_pairs(self, sentpairs, layer):
     """Calculate accuracy score, assuming first pair is correct one"""
     got_right = 0
     for correct_sent, incorrect_sent in sentpairs:
-      if sum(self.gmm_score(correct_sent)[1]) > sum(self.gmm_score(incorrect_sent)[1]):
+      correct_sent_score = np.sum(self.gmm_score(correct_sent)[1][layer])
+      incorrect_sent_score = np.sum(self.gmm_score(incorrect_sent)[1][layer])
+      if correct_sent_score > incorrect_sent_score:
         got_right += 1
     return got_right / len(sentpairs)
