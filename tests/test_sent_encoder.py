@@ -6,7 +6,7 @@ EPS = 1e-9
 
 class TestSentEncoder(unittest.TestCase):
   def setUp(self):
-    self.enc = src.sent_encoder.SentEncoder()
+    self.enc = src.sent_encoder.SentEncoder(model_name='roberta-base')
 
 
   def test_diff_encoder(self):
@@ -19,10 +19,10 @@ class TestSentEncoder(unittest.TestCase):
 
 
   def test_gen_contextual(self):
-    sents = ['Good morning']
-    vecs = self.enc.contextual_token_vecs(sents)
-    assert vecs.shape == (2, 768)
-
     sents = ['Good morning', 'You are drunk']
-    vecs = self.enc.contextual_token_vecs(sents)
-    assert vecs.shape == (5, 768)
+    all_tokens, all_vecs = self.enc.contextual_token_vecs(sents)
+
+    assert len(all_vecs) == 2
+    assert all_vecs[0].shape == (2, 13, 768)
+    assert all_vecs[1].shape == (3, 13, 768)
+    assert all_tokens == [['Good', ' morning'], ['You', ' are', ' drunk']]

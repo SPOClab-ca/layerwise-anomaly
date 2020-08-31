@@ -16,6 +16,40 @@ class SentEncoder:
     self.auto_model = AutoModel.from_pretrained(model_name).cuda()
 
 
+  def contextual_token_vecs(self, sents):
+    """Returns: (all_tokens, sentence_token_vecs) where:
+    all_tokens is a List[List[tokens]], one list for each sentence.
+    sentence_token_vecs is List[np.array(sentence length, 13, 768)], one array for each sentence.
+    Ignore special tokens like [CLS] and [PAD].
+    """
+    all_tokens = []
+    sentence_token_vecs = []
+
+    for batch_ix in range(0, len(sents), BATCH_SIZE):
+      batch_sentences = sents[batch_ix : batch_ix+BATCH_SIZE]
+
+      ids = torch.tensor(self.auto_tokenizer(batch_sentences, padding=True)['input_ids']).cuda()
+
+      with torch.no_grad():
+        # (num_layers, batch_size, sent_length, 768)
+        vecs = self.auto_model(ids, attention_mask=(ids != 1), output_hidden_states=True)[2]
+        vecs = np.array([v.detach().cpu().numpy() for v in vecs])
+
+      for sent_ix in range(ids.shape[0]):
+        tokens = []
+        token_vecs = []
+
+        for tok_ix in range(ids.shape[1]):
+          if ids[sent_ix, tok_ix] not in self.auto_tokenizer.all_special_ids:
+            tokens.append(self.auto_tokenizer.decode(int(ids[sent_ix, tok_ix])))
+            token_vecs.append(vecs[:, sent_ix, tok_ix, :])
+
+        all_tokens.append(tokens)
+        sentence_token_vecs.append(np.array(token_vecs))
+
+    return all_tokens, sentence_token_vecs
+
+
   def _mean_without_pad(self, batch_ids, batch_vecs):
     """Must not include [PAD] tokens when averaging token embeddings"""
     positions_not_pad = (batch_ids != self.auto_tokenizer.pad_token_id).to(float).unsqueeze(2)
@@ -44,25 +78,6 @@ class SentEncoder:
       tgt_sent_vecs = self._mean_without_pad(tgt_ids, tgt_vecs)
       diff_sent_vecs = src_sent_vecs - tgt_sent_vecs
       result.append(diff_sent_vecs.detach().cpu().numpy())
-
-    return np.vstack(result)
-
-
-  def contextual_token_vecs(self, sents, layer=-2):
-    """Get one embedding per token of sentence, stacked in a single array. Ignore special tokens."""
-    result = []
-    for batch_ix in range(0, len(sents), BATCH_SIZE):
-      batch_sentences = sents[batch_ix : batch_ix+BATCH_SIZE]
-
-      ids = torch.tensor(self.auto_tokenizer(batch_sentences, padding=True)['input_ids']).cuda()
-
-      with torch.no_grad():
-        vecs = self.auto_model(ids, attention_mask=(ids != 1), output_hidden_states=True)[2][layer]
-
-      for sent_ix in range(ids.shape[0]):
-        for tok_ix in range(ids.shape[1]):
-          if ids[sent_ix, tok_ix] not in self.auto_tokenizer.all_special_ids:
-            result.append(vecs[sent_ix, tok_ix, :].detach().cpu().numpy())
 
     return np.vstack(result)
 
