@@ -36,17 +36,19 @@ bnc_sentences = random.sample(bnc_sentences, 1000)
 
 # ## Plot of GMM score at each layer and word
 
-# In[13]:
+# In[3]:
 
 
 model = src.anomaly_model.AnomalyModel(bnc_sentences)
 
 
-# In[18]:
+# In[6]:
 
 
 def all_layer_scores(sent):
-  tokens, all_layer = model.gmm_score(sent)
+  tokens, all_layer = model.gmm_score([sent])
+  tokens = tokens[0]
+  all_layer = all_layer[0]
   plt.figure(figsize=(8, 8))
   plt.imshow(all_layer, origin='lower')
   plt.xticks(range(len(tokens)), tokens, rotation='vertical')
@@ -59,17 +61,19 @@ all_layer_scores("The cats won't eating the food that Mary gives them.")
 
 # ## Evaluate on Osterhout / Nicol data
 
-# In[15]:
+# In[7]:
 
 
 sentgen = src.sentpair_generator.SentPairGenerator()
 
 
-# In[22]:
+# In[11]:
 
 
 for layer in range(13):
-  syn_score = model.eval_sent_pairs(sentgen.get_osterhout_nicol(anomaly_type='syntactic'), layer)
-  sem_score = model.eval_sent_pairs(sentgen.get_osterhout_nicol(anomaly_type='semantic'), layer)
+  syn_results = model.eval_sent_pairs(sentgen.get_osterhout_nicol(anomaly_type='syntactic'), layer)
+  sem_results = model.eval_sent_pairs(sentgen.get_osterhout_nicol(anomaly_type='semantic'), layer)
+  syn_score = sum(syn_results) / len(syn_results)
+  sem_score = sum(sem_results) / len(sem_results)
   print(layer, syn_score, sem_score)
 

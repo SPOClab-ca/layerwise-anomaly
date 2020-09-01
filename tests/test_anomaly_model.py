@@ -13,6 +13,19 @@ class TestAnomalyModel(unittest.TestCase):
 
 
   def test_gmm_score(self):
-    tokens, layer_scores = self.model.gmm_score('I like pigs.')
-    assert tokens == ['I', ' like', ' pigs', '.']
-    assert layer_scores.shape == (13, 4)
+    all_tokens, all_scores = self.model.gmm_score(['I like pigs.', 'My pig likes to eat.'])
+
+    assert len(all_tokens) == 2
+    assert len(all_scores) == 2
+
+    assert all_tokens[0] == ['I', ' like', ' pigs', '.']
+    assert all_scores[0].shape == (13, 4)
+
+    assert all_tokens[1] == ['My', ' pig', ' likes', ' to', ' eat', '.']
+    assert all_scores[1].shape == (13, 6)
+
+
+  def test_eval_sent_pairs(self):
+    sents = [('Good morning', 'Good afternoon'), ('Good afternoon', 'Good morning')]
+    results = self.model.eval_sent_pairs(sents, -2)
+    assert results == [True, False]
