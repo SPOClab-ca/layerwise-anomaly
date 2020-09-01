@@ -3,9 +3,10 @@ import src.anomaly_model
 
 class TestAnomalyModel(unittest.TestCase):
 
-  def setUp(self):
+  @classmethod
+  def setUpClass(cls):
     train_sentences = ['Good morning', 'You are drunk']
-    self.model = src.anomaly_model.AnomalyModel(train_sentences)
+    cls.model = src.anomaly_model.AnomalyModel(train_sentences)
 
 
   def test_init(self):

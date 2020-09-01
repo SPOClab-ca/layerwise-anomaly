@@ -5,8 +5,10 @@ import numpy as np
 EPS = 1e-9
 
 class TestSentEncoder(unittest.TestCase):
-  def setUp(self):
-    self.enc = src.sent_encoder.SentEncoder(model_name='roberta-base')
+
+  @classmethod
+  def setUpClass(cls):
+    cls.enc = src.sent_encoder.SentEncoder(model_name='roberta-base')
 
 
   def test_diff_encoder(self):
