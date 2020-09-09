@@ -1,0 +1,41 @@
+Type,Model,Max12,Max12/max4
+Dative Alternation,roberta-base,1.87,1.171
+Random Wikipedia,roberta-base,6.888,1.349
+"Osterhout / Nicol, Syntactic Anomaly",roberta-base,1.846,2.117
+"Osterhout / Nicol, Semantic Anomaly",roberta-base,2.017,1.422
+Wikipedia delete one word,roberta-base,1.409,1.582
+"Transitive, replace subject with another word",roberta-base,2.753,1.138
+"Transitive, swap subject and object",roberta-base,1.468,2.005
+"Transitive, replace determiner 'the' with 'a'",roberta-base,2.262,1.551
+"STS-2012, high similarity",roberta-base,3.124,1.154
+"STS-2012, low similarity",roberta-base,4.666,1.132
+"PAWS, paraphrase",roberta-base,1.548,1.329
+"PAWS, non-paraphrase",roberta-base,1.517,1.391
+"Chinese, random news",clue/roberta-chinese-base,6.015,1.232
+"Chinese, BA alternation",clue/roberta-chinese-base,3.186,1.279
+Dative Alternation,bert-base-uncased,2.973,1.687
+Random Wikipedia,bert-base-uncased,9.906,1.413
+"Osterhout / Nicol, Syntactic Anomaly",bert-base-uncased,2.332,1.798
+"Osterhout / Nicol, Semantic Anomaly",bert-base-uncased,3.097,1.466
+Wikipedia delete one word,bert-base-uncased,1.88,1.756
+"Transitive, replace subject with another word",bert-base-uncased,4.374,1.148
+"Transitive, swap subject and object",bert-base-uncased,1.962,2.719
+"Transitive, replace determiner 'the' with 'a'",bert-base-uncased,3.889,1.822
+"STS-2012, high similarity",bert-base-uncased,4.904,1.283
+"STS-2012, low similarity",bert-base-uncased,7.33,1.241
+"PAWS, paraphrase",bert-base-uncased,2.326,1.717
+"PAWS, non-paraphrase",bert-base-uncased,2.157,1.658
+Dative Alternation,bert-base-multilingual-cased,4.53,2.337
+Random Wikipedia,bert-base-multilingual-cased,15.041,2.092
+"Osterhout / Nicol, Syntactic Anomaly",bert-base-multilingual-cased,3.559,2.337
+"Osterhout / Nicol, Semantic Anomaly",bert-base-multilingual-cased,5.398,2.439
+Wikipedia delete one word,bert-base-multilingual-cased,3.697,3.294
+"Transitive, replace subject with another word",bert-base-multilingual-cased,7.437,1.952
+"Transitive, swap subject and object",bert-base-multilingual-cased,3.373,4.721
+"Transitive, replace determiner 'the' with 'a'",bert-base-multilingual-cased,4.884,2.185
+"STS-2012, high similarity",bert-base-multilingual-cased,8.789,2.125
+"STS-2012, low similarity",bert-base-multilingual-cased,12.28,1.978
+"PAWS, paraphrase",bert-base-multilingual-cased,5.108,3.255
+"PAWS, non-paraphrase",bert-base-multilingual-cased,4.757,3.187
+"Chinese, random news",bert-base-multilingual-cased,14.639,2.008
+"Chinese, BA alternation",bert-base-multilingual-cased,5.987,2.366
