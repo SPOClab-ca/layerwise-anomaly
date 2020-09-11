@@ -1,16 +1,18 @@
 library(tidyverse)
 library(ggplot2)
 
-df <- read_csv('blimp_result.csv')
+{
+  # Data loading
+  df <- read_csv('blimp_result.csv')
+  
+  # Compare with published results, join with their csv
+  warstadt_df <- read_csv("warstadt_blimp_results.csv") %>%
+    filter(type == "sentence")
+  
+  df <- df %>% merge(warstadt_df, by.x="task_name", by.y="UID")
+}
 
-df_mean <- df %>% group_by(layer) %>% summarize(score=mean(score))
-
-ggplot(df_mean, aes(x=layer, y=score)) +
-  geom_point() +
-  geom_line() +
-  theme_bw()
-
-
+# Plot GMM accuracy by layer for each of 67 paradigms
 for(cur_task_name in unique(df$task_name)) {
   df_task <- df %>% filter(task_name == cur_task_name)
   ggplot(df_task, aes(x=layer, y=score)) +
@@ -22,3 +24,16 @@ for(cur_task_name in unique(df$task_name)) {
     theme_bw()
   ggsave(paste('outfig/', cur_task_name, '.png'))
 }
+
+# Try to derive first column of table 3, but doesn't match...
+warstadt_df %>%
+  group_by(linguistics_term) %>%
+  summarize(GPT2=mean(GPT2), n=sum(n)) %>%
+  summarize(overall_score=weighted.mean(GPT2, n))
+
+# Calculate per-phenomenon score of our model
+df %>%
+  filter(layer==11) %>%
+  group_by(linguistics_term) %>%
+  summarize(score=100*mean(score))
+
