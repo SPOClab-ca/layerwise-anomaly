@@ -4,8 +4,9 @@ Run GMM on BLiMP syntactic minimal pairs.
 Example usage:
 PYTHONPATH=. time python scripts/blimp_anomaly.py \
   --bnc_path=data/bnc.pkl \
-  --blimp_path=data/blimp/ \
-  --out_file=blimp_result.txt
+  --blimp_path=data/blimp/data/ \
+  --out_file=blimp_result.txt \
+  --num_gmm_sentences 1000
 """
 import argparse
 import glob
@@ -19,6 +20,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--bnc_path', type=str)
 parser.add_argument('--blimp_path', type=str)
 parser.add_argument('--out_file', type=str)
+parser.add_argument('--num_gmm_sentences', type=int)
 args = parser.parse_args()
 print(args)
 
@@ -29,7 +31,7 @@ with open(args.bnc_path, 'rb') as f:
   bnc_sentences = pickle.load(f)
 
 random.seed(12345)
-bnc_sentences = random.sample(bnc_sentences, 1000)
+bnc_sentences = random.sample(bnc_sentences, args.num_gmm_sentences)
 
 print('Training GMM...')
 model = src.anomaly_model.AnomalyModel(bnc_sentences)
@@ -51,5 +53,5 @@ def process_blimp(fname):
       print(task_name, layer, result, file=outf)
 
 
-for fname in glob.glob(args.blimp_path + '/data/**.jsonl'):
+for fname in glob.glob(args.blimp_path + '/**.jsonl'):
   process_blimp(fname)
