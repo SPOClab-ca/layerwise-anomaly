@@ -9,14 +9,14 @@ class AnomalyModel:
   or semantic anomalies.
   """
 
-  def __init__(self, train_sentences):
+  def __init__(self, train_sentences, n_components=1, covariance_type='full'):
     self.enc = src.sent_encoder.SentEncoder()
     self.gmms = []
 
     _, all_vecs = self.enc.contextual_token_vecs(train_sentences)
     for layer in range(13):
       sent_vecs = np.vstack([vs[:,layer,:] for vs in all_vecs])
-      gmm = sklearn.mixture.GaussianMixture()
+      gmm = sklearn.mixture.GaussianMixture(n_components=n_components, covariance_type=covariance_type)
       gmm.fit(sent_vecs)
       self.gmms.append(gmm)
 

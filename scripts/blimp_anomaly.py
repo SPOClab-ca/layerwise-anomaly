@@ -5,8 +5,7 @@ Example usage:
 PYTHONPATH=. time python scripts/blimp_anomaly.py \
   --bnc_path=data/bnc.pkl \
   --blimp_path=data/blimp/data/ \
-  --out_file=blimp_result.txt \
-  --num_gmm_sentences 1000
+  --out_file=blimp_result.txt
 """
 import argparse
 import glob
@@ -20,7 +19,9 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--bnc_path', type=str)
 parser.add_argument('--blimp_path', type=str)
 parser.add_argument('--out_file', type=str)
-parser.add_argument('--num_gmm_sentences', type=int)
+parser.add_argument('--num_gmm_sentences', type=int, default=1000)
+parser.add_argument('--n_components', type=int, default=1)
+parser.add_argument('--covariance_type', type=str, default='full')
 args = parser.parse_args()
 print(args)
 
@@ -34,7 +35,11 @@ random.seed(12345)
 bnc_sentences = random.sample(bnc_sentences, args.num_gmm_sentences)
 
 print('Training GMM...')
-model = src.anomaly_model.AnomalyModel(bnc_sentences)
+model = src.anomaly_model.AnomalyModel(
+  bnc_sentences,
+  n_components=args.n_components,
+  covariance_type=args.covariance_type
+)
 
 
 def process_blimp(fname):
