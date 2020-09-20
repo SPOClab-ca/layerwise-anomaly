@@ -15,14 +15,16 @@ library(ggplot2)
 # Plot GMM accuracy by layer for each of 67 paradigms
 for(cur_task_name in unique(df$task_name)) {
   df_task <- df %>% filter(task_name == cur_task_name)
+  top_task_name <- df_task %>% head(1) %>% select(linguistics_term)
   ggplot(df_task, aes(x=layer, y=score)) +
     geom_point() +
     geom_line() +
-    ggtitle(cur_task_name) +
+    ggtitle(paste(top_task_name, '/', cur_task_name)) +
     scale_y_continuous(limits=c(0, 1)) +
     scale_x_discrete(limits=seq(0, 12)) +
     theme_bw()
-  ggsave(paste('outfig/', cur_task_name, '.png'))
+  dir.create(paste0('outfig/', top_task_name), showWarnings=F)
+  ggsave(paste0('outfig/', top_task_name, '/', cur_task_name, '.png'))
 }
 
 # Try to derive first column of table 3, but doesn't match...
