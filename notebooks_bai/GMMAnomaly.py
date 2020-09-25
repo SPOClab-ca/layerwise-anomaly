@@ -54,9 +54,17 @@ def all_layer_scores(sent):
   plt.xticks(range(len(tokens)), tokens, rotation='vertical')
   plt.yticks(range(12), range(12))
   plt.ylabel('Layer')
+  for (j,i),label in np.ndenumerate(all_layer):
+    plt.text(i, j, int(label), ha='center', va='center', color='white')
   plt.show()
 
 all_layer_scores("The cats won't eating the food that Mary gives them.")
+
+
+# In[ ]:
+
+
+all_layer_scores("Corey's hamster entertained a nearby backpack and filled it with sawdust.")
 
 
 # ## Evaluate on Osterhout / Nicol data
