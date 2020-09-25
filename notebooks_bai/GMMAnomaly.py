@@ -42,7 +42,7 @@ bnc_sentences = random.sample(bnc_sentences, 1000)
 model = src.anomaly_model.AnomalyModel(bnc_sentences)
 
 
-# In[6]:
+# In[4]:
 
 
 def all_layer_scores(sent):
@@ -61,19 +61,68 @@ all_layer_scores("The cats won't eating the food that Mary gives them.")
 
 # ## Evaluate on Osterhout / Nicol data
 
-# In[7]:
+# In[5]:
 
 
 sentgen = src.sentpair_generator.SentPairGenerator()
 
 
-# In[11]:
+# In[18]:
 
 
-for layer in range(13):
-  syn_results = model.eval_sent_pairs(sentgen.get_osterhout_nicol(anomaly_type='syntactic'), layer)
-  sem_results = model.eval_sent_pairs(sentgen.get_osterhout_nicol(anomaly_type='semantic'), layer)
-  syn_score = sum(syn_results) / len(syn_results)
-  sem_score = sum(sem_results) / len(sem_results)
-  print(layer, syn_score, sem_score)
+def process_sentpair_dataset(csvname, correct_col, wrong_col):
+  scores = []
+  for layer in range(13):
+    results = model.eval_sent_pairs(sentgen.get_csv_based_dataset(csvname, correct_col, wrong_col), layer)
+    score = sum(results) / len(results)
+    scores.append(score)
+    print(layer, score)
+    
+  plt.plot(scores)
+  plt.ylim((0, 1))
+  plt.xticks(range(0, 13))
+  plt.title(f"{csvname}: {correct_col} vs {wrong_col}")
+  plt.xlabel('Layer')
+  plt.ylabel('GMM Accuracy')
+  plt.show()
+
+
+# In[19]:
+
+
+process_sentpair_dataset('osterhout-nicol.csv', 'original_sentence', 'syntactic_anomaly')
+
+
+# In[20]:
+
+
+process_sentpair_dataset('osterhout-nicol.csv', 'original_sentence', 'semantic_anomaly')
+
+
+# ## Evaluate on Pylkkanen data
+
+# In[21]:
+
+
+process_sentpair_dataset('pylkkanen.csv', 'sent_control', 'sent_coercion')
+
+
+# In[22]:
+
+
+process_sentpair_dataset('pylkkanen.csv', 'sent_control', 'sent_anomaly')
+
+
+# ## Evaluate on Warren data
+
+# In[23]:
+
+
+process_sentpair_dataset('warren.csv', 'sent_control', 'sent_no_violation')
+
+
+# In[24]:
+
+
+process_sentpair_dataset('warren.csv', 'sent_control', 'sent_violation')
 
