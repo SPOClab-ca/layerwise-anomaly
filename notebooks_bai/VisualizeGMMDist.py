@@ -50,13 +50,13 @@ enc = src.sent_encoder.SentEncoder()
 
 # ## Plot PCA
 
-# In[6]:
+# In[4]:
 
 
 import sklearn.decomposition
 
 #for LAYER in range(13):
-for LAYER in [11]:
+for LAYER in [12]:
   tokens, vecs = enc.contextual_token_vecs(bnc_sentences)
   tokens = list(itertools.chain(*tokens))
   vecs = np.vstack(vecs)[:, LAYER, :]
@@ -64,17 +64,37 @@ for LAYER in [11]:
   pca = sklearn.decomposition.PCA(n_components=2)
   vecs_pca = pca.fit_transform(vecs)
   vecs_pca_df = pd.DataFrame({'token': tokens, 'x0': vecs_pca[:,0], 'x1': vecs_pca[:,1]})
-  #vecs_pca_df = vecs_pca_df[vecs_pca_df.token != '.']
 
   plot = sns.scatterplot(data=vecs_pca_df, x='x0', y='x1')
   plt.suptitle(f"Layer: {LAYER}")
   plt.show()
 
 
-# ## What are outliers?
+# ## Plot distributions
 
-# In[8]:
+# In[5]:
 
 
-vecs_pca_df[vecs_pca_df.x0 > 10].head(10)
+with open('../data/bnc.pkl', 'rb') as f:
+  bnc_sentences = pickle.load(f)
+
+random.seed(12345)
+bnc_sentences = random.sample(bnc_sentences, 1000)
+
+
+# In[6]:
+
+
+model = src.anomaly_model.AnomalyModel(bnc_sentences)
+all_tokens, all_scores = model.gmm_score(bnc_sentences)
+
+
+# In[7]:
+
+
+for layer in range(13):
+  layer_scores = np.concatenate([sent_scores[layer] for sent_scores in all_scores])
+  sns.histplot(layer_scores, bins=50)
+  plt.suptitle(f"Layer: {layer}\nMean:{np.mean(layer_scores):.2f}, STD: {np.std(layer_scores):.2f}")
+  plt.show()
 
