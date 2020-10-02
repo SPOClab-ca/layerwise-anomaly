@@ -1,2 +1,8 @@
 # Generated from scripts/process_bnc.py
 bnc.pkl
+bnc-aca.pkl
+bnc-dem.pkl
+bnc-fic.pkl
+bnc-news.pkl
+
+blimp/
