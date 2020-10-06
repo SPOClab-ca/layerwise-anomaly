@@ -23,7 +23,10 @@ parser.add_argument('--num_gmm_sentences', type=int, default=1000)
 parser.add_argument('--n_components', type=int, default=1)
 parser.add_argument('--covariance_type', type=str, default='full')
 args = parser.parse_args()
-print(args)
+
+with open(args.out_file, 'a') as outf:
+  print(args)
+  print(args, file=outf)
 
 
 print('Loading BNC...')

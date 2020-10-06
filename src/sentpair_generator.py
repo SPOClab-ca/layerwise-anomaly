@@ -62,21 +62,12 @@ class SentPairGenerator():
       data = pickle.load(f)
       data = list(data)
     return data
-  
 
-  def get_osterhout_nicol(self, anomaly_type):
-    """
-    90 sentences from Osterhout and Nicol (1999). Anomaly can be 'syntactic' or 'semantic'.
-    """
-    df = pd.read_csv(os.path.join(self.data_dir, 'osterhout-nicol.csv'))
 
-    if anomaly_type == 'syntactic':
-      df = df[['original_sentence', 'syntactic_anomaly']]
-    elif anomaly_type == 'semantic':
-      df = df[['original_sentence', 'semantic_anomaly']]
-    else:
-      assert(False)
-
+  def get_csv_based_dataset(self, csvname, correct_col, wrong_col):
+    """Get two columns of a csv dataset"""
+    df = pd.read_csv(os.path.join(self.data_dir, csvname))
+    df = df[[correct_col, wrong_col]]
     return [tuple(x) for x in df.to_numpy()]
 
 

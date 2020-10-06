@@ -3,6 +3,7 @@ from transformers import AutoTokenizer, AutoModel
 import numpy as np
 import pandas as pd
 import torch
+import string
 
 BATCH_SIZE = 32
 device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
@@ -41,8 +42,11 @@ class SentEncoder:
 
         for tok_ix in range(ids.shape[1]):
           if ids[sent_ix, tok_ix] not in self.auto_tokenizer.all_special_ids:
-            tokens.append(self.auto_tokenizer.decode(int(ids[sent_ix, tok_ix])))
-            token_vecs.append(vecs[:, sent_ix, tok_ix, :])
+            cur_tok = self.auto_tokenizer.decode(int(ids[sent_ix, tok_ix]))
+            # Exclude tokens that consist entirely of punctuation
+            if cur_tok not in string.punctuation:
+              tokens.append(cur_tok)
+              token_vecs.append(vecs[:, sent_ix, tok_ix, :])
 
         all_tokens.append(tokens)
         sentence_token_vecs.append(np.array(token_vecs))
