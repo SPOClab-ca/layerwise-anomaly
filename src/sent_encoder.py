@@ -5,7 +5,7 @@ import pandas as pd
 import torch
 
 BATCH_SIZE = 32
-
+device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
 class SentEncoder:
   def __init__(self, model_name='roberta-base'):
     self.model_name = model_name
@@ -13,7 +13,7 @@ class SentEncoder:
       self.auto_tokenizer = transformers.BertTokenizer.from_pretrained(model_name)
     else:
       self.auto_tokenizer = AutoTokenizer.from_pretrained(model_name)
-    self.auto_model = AutoModel.from_pretrained(model_name).cuda()
+    self.auto_model = AutoModel.from_pretrained(model_name).to(device)
 
 
   def contextual_token_vecs(self, sents):
@@ -28,7 +28,7 @@ class SentEncoder:
     for batch_ix in range(0, len(sents), BATCH_SIZE):
       batch_sentences = sents[batch_ix : batch_ix+BATCH_SIZE]
 
-      ids = torch.tensor(self.auto_tokenizer(batch_sentences, padding=True)['input_ids']).cuda()
+      ids = torch.tensor(self.auto_tokenizer(batch_sentences, padding=True)['input_ids']).to(device)
 
       with torch.no_grad():
         # (num_layers, batch_size, sent_length, 768)
@@ -66,8 +66,8 @@ class SentEncoder:
       src_sentences = [p[0] for p in batch_sentences]
       tgt_sentences = [p[1] for p in batch_sentences]
 
-      src_ids = torch.tensor(self.auto_tokenizer(src_sentences, padding=True)['input_ids']).cuda()
-      tgt_ids = torch.tensor(self.auto_tokenizer(tgt_sentences, padding=True)['input_ids']).cuda()
+      src_ids = torch.tensor(self.auto_tokenizer(src_sentences, padding=True)['input_ids']).to(device)
+      tgt_ids = torch.tensor(self.auto_tokenizer(tgt_sentences, padding=True)['input_ids']).to(device)
 
       # Needed to avoid leaking cuda memory
       with torch.no_grad():
