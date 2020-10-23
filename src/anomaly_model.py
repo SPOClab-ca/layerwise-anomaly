@@ -9,8 +9,8 @@ class AnomalyModel:
   or semantic anomalies.
   """
 
-  def __init__(self, train_sentences, n_components=1, covariance_type='full'):
-    self.enc = src.sent_encoder.SentEncoder()
+  def __init__(self, train_sentences, n_components=1, covariance_type='full', model_name='roberta-base'):
+    self.enc = src.sent_encoder.SentEncoder(model_name=model_name)
     self.gmms = []
 
     _, all_vecs = self.enc.contextual_token_vecs(train_sentences)
