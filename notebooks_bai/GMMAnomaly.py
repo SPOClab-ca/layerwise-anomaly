@@ -69,13 +69,13 @@ all_layer_scores("Corey's hamster entertained a nearby backpack and filled it wi
 
 # ## Evaluate on Osterhout / Nicol data
 
-# In[5]:
+# In[6]:
 
 
 sentgen = src.sentpair_generator.SentPairGenerator()
 
 
-# In[18]:
+# In[7]:
 
 
 def process_sentpair_dataset(csvname, correct_col, wrong_col):
@@ -95,13 +95,13 @@ def process_sentpair_dataset(csvname, correct_col, wrong_col):
   plt.show()
 
 
-# In[19]:
+# In[8]:
 
 
 process_sentpair_dataset('osterhout-nicol.csv', 'original_sentence', 'syntactic_anomaly')
 
 
-# In[20]:
+# In[9]:
 
 
 process_sentpair_dataset('osterhout-nicol.csv', 'original_sentence', 'semantic_anomaly')
@@ -109,13 +109,13 @@ process_sentpair_dataset('osterhout-nicol.csv', 'original_sentence', 'semantic_a
 
 # ## Evaluate on Pylkkanen data
 
-# In[21]:
+# In[10]:
 
 
 process_sentpair_dataset('pylkkanen.csv', 'sent_control', 'sent_coercion')
 
 
-# In[22]:
+# In[11]:
 
 
 process_sentpair_dataset('pylkkanen.csv', 'sent_control', 'sent_anomaly')
@@ -123,14 +123,28 @@ process_sentpair_dataset('pylkkanen.csv', 'sent_control', 'sent_anomaly')
 
 # ## Evaluate on Warren data
 
-# In[23]:
+# In[12]:
 
 
 process_sentpair_dataset('warren.csv', 'sent_control', 'sent_no_violation')
 
 
-# In[24]:
+# In[13]:
 
 
 process_sentpair_dataset('warren.csv', 'sent_control', 'sent_violation')
+
+
+# ## Datasets from Ettinger 2020: CPRAG-34 and ROLE-88)
+
+# In[16]:
+
+
+process_sentpair_dataset('cprag34.csv', 'correct', 'incorrect')
+
+
+# In[14]:
+
+
+process_sentpair_dataset('role88.csv', 'correct', 'reversed')
 
