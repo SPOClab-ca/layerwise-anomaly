@@ -19,9 +19,11 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--bnc_path', type=str)
 parser.add_argument('--blimp_path', type=str)
 parser.add_argument('--out_file', type=str)
+parser.add_argument('--model_type', type=str, default='gmm')
 parser.add_argument('--num_gmm_sentences', type=int, default=1000)
 parser.add_argument('--n_components', type=int, default=1)
 parser.add_argument('--covariance_type', type=str, default='full')
+parser.add_argument('--svm_kernel', type=str, default='rbf')
 args = parser.parse_args()
 
 with open(args.out_file, 'a') as outf:
@@ -37,11 +39,13 @@ with open(args.bnc_path, 'rb') as f:
 random.seed(12345)
 bnc_sentences = random.sample(bnc_sentences, args.num_gmm_sentences)
 
-print('Training GMM...')
+print('Training anomaly model...')
 model = src.anomaly_model.AnomalyModel(
   bnc_sentences,
+  model_type=args.model_type,
   n_components=args.n_components,
-  covariance_type=args.covariance_type
+  covariance_type=args.covariance_type,
+  svm_kernel=args.svm_kernel,
 )
 
 
