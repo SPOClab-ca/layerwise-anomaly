@@ -108,25 +108,25 @@ dist
 
 # ## Fit same data with GMM
 
-# In[14]:
+# In[13]:
 
 
 import sklearn.mixture
 
 
-# In[15]:
+# In[14]:
 
 
 gmm = sklearn.mixture.GaussianMixture()
 
 
-# In[16]:
+# In[15]:
 
 
 gmm.fit(X)
 
 
-# In[17]:
+# In[16]:
 
 
 gmm.score([v])
@@ -134,10 +134,25 @@ gmm.score([v])
 
 # ## Connection between the two
 # 
-# The score returned by GMM is $\log(\frac{1}{(2 \pi)^{D/2} |S|^{1/2}} \exp(-\frac{1}{2}d))$ where $d$ is the Mahalanobis distance.
+# The score returned by GMM is $G = \log(\frac{1}{(2 \pi)^{D/2} |S|^{1/2}} \exp(-\frac{1}{2}d^2))$ where $d$ is the Mahalanobis distance.
+# 
+# Equivalently, $d^2 = -D \log(2 \pi) - \log |S| - 2G$.
+# 
+# Our method of summing `gmm.score_samples` across tokens can be viewed as:
+# 1. Joint log likelihood of all the tokens: $\sum_{i=1}^n G_i = \log(P(w_i) \cdots P(w_n))$
+# 2. Sum of squared Mahalanobis distances: $\sum_{i=1}^n G_i = -n (\frac{D}{2} \log (2 \pi) - \frac{1}{2} \log|S|)) - \frac{1}{2} \sum_{i=1}^n d^2$
+# 
+# This is to show that what we're doing is theoretically justified. We have empirical support as well, since this method performs better than several other methods by BLiMP accuracy.
+
+# In[17]:
+
+
+math.log(1 / ((2*math.pi)**(3/2) * np.linalg.det(cov)**0.5) * math.exp(-0.5 * dist**2))
+
 
 # In[19]:
 
 
-math.log(1 / ((2*math.pi)**(3/2) * np.linalg.det(cov)**0.5) * math.exp(-0.5 * dist**2))
+# Inverse formula
+math.sqrt(-3 * math.log(2*math.pi) - math.log(scipy.linalg.det(gmm.covariances_[0])) - 2*gmm.score([v]))
 
