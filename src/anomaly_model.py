@@ -54,11 +54,11 @@ class AnomalyModel:
 
   def eval_sent_pairs(self, sentpairs, layer):
     """Evaluate sentence pairs, assuming first pair is correct one.
-    Return list of booleans, true if correct one has higher likelihood.
+    Return list of score differences, positive if the correct one has higher likelihood.
     """
     correct_scores = self.gmm_score([sp[0] for sp in sentpairs])[1]
     correct_scores = [np.sum(sent_scores[layer]) for sent_scores in correct_scores]
     incorrect_scores = self.gmm_score([sp[1] for sp in sentpairs])[1]
     incorrect_scores = [np.sum(sent_scores[layer]) for sent_scores in incorrect_scores]
 
-    return [x > y for (x,y) in zip(correct_scores, incorrect_scores)]
+    return [x - y for (x,y) in zip(correct_scores, incorrect_scores)]

@@ -12,7 +12,9 @@ sys.path.append('../')
 import pickle
 import random
 import numpy as np
+import pandas as pd
 import matplotlib.pyplot as plt
+import seaborn as sns
 
 import src.sentpair_generator
 import src.anomaly_model
@@ -79,16 +81,17 @@ def process_sentpair_dataset(taskname, category, sent_pairs):
   scores = []
   for layer in range(13):
     results = model.eval_sent_pairs(sent_pairs, layer)
-    score = sum(results) / len(results)
-    scores.append(score)
-    print(layer, score)
-    
-  plt.plot(scores)
-  plt.ylim((0, 1))
+    scores.extend([{'layer': layer, 'score': r} for r in results])
+  scores = pd.DataFrame(scores)
+  
+  plt.figure(figsize=(10, 5))
+  ax = sns.boxplot(x='layer', y='score', data=scores, color='lightblue')
+  ax.axhline(0, color='red', linestyle='dashed')
+  plt.ylim((-abs(scores.score.max()), abs(scores.score.max())))
   plt.xticks(range(0, 13))
   plt.title(f"{category} - {taskname}")
   plt.xlabel('Layer')
-  plt.ylabel('GMM Accuracy')
+  plt.ylabel('GMM Score Difference')
   plt.show()
 
 

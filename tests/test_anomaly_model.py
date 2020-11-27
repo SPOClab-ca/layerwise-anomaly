@@ -27,6 +27,9 @@ class TestAnomalyModel(unittest.TestCase):
 
 
   def test_eval_sent_pairs(self):
-    sents = [('Good morning', 'Good afternoon'), ('Good afternoon', 'Good morning')]
+    sents = [('Good morning', 'Good afternoon'), ('Good afternoon', 'Good morning'), ('pig', 'pig')]
     results = self.model.eval_sent_pairs(sents, -2)
-    assert results == [True, False]
+    assert len(results) == 3
+    assert results[0] > 0
+    assert results[1] < 0
+    assert results[2] == 0

@@ -59,7 +59,7 @@ def process_blimp(fname):
   sentpairs = [(l['sentence_good'], l['sentence_bad']) for l in lines]
   
   for layer in range(13):
-    result = sum(model.eval_sent_pairs(sentpairs, layer)) / len(sentpairs)
+    result = sum([x > 0 for x in model.eval_sent_pairs(sentpairs, layer)]) / len(sentpairs)
     with open(args.out_file, 'a') as outf:
       print(task_name, layer, result)
       print(task_name, layer, result, file=outf)
