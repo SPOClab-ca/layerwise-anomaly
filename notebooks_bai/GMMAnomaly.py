@@ -60,28 +60,25 @@ def all_layer_scores(sent):
 
 all_layer_scores("The cats won't eating the food that Mary gives them.")
 
-
-# In[ ]:
-
-
 all_layer_scores("Corey's hamster entertained a nearby backpack and filled it with sawdust.")
+# ## Evaluate on all datasets
 
-
-# ## Evaluate on Osterhout / Nicol data
-
-# In[6]:
+# In[5]:
 
 
 sentgen = src.sentpair_generator.SentPairGenerator()
 
 
-# In[7]:
+# In[6]:
 
 
-def process_sentpair_dataset(csvname, correct_col, wrong_col):
+def process_sentpair_dataset(taskname, category, sent_pairs):
+  # For debugging, take first 100
+  sent_pairs = sent_pairs[:100]
+  
   scores = []
   for layer in range(13):
-    results = model.eval_sent_pairs(sentgen.get_csv_based_dataset(csvname, correct_col, wrong_col), layer)
+    results = model.eval_sent_pairs(sent_pairs, layer)
     score = sum(results) / len(results)
     scores.append(score)
     print(layer, score)
@@ -89,62 +86,15 @@ def process_sentpair_dataset(csvname, correct_col, wrong_col):
   plt.plot(scores)
   plt.ylim((0, 1))
   plt.xticks(range(0, 13))
-  plt.title(f"{csvname}: {correct_col} vs {wrong_col}")
+  plt.title(f"{category} - {taskname}")
   plt.xlabel('Layer')
   plt.ylabel('GMM Accuracy')
   plt.show()
 
 
-# In[8]:
+# In[7]:
 
 
-process_sentpair_dataset('osterhout-nicol.csv', 'original_sentence', 'syntactic_anomaly')
-
-
-# In[9]:
-
-
-process_sentpair_dataset('osterhout-nicol.csv', 'original_sentence', 'semantic_anomaly')
-
-
-# ## Evaluate on Pylkkanen data
-
-# In[10]:
-
-
-process_sentpair_dataset('pylkkanen.csv', 'sent_control', 'sent_coercion')
-
-
-# In[11]:
-
-
-process_sentpair_dataset('pylkkanen.csv', 'sent_control', 'sent_anomaly')
-
-
-# ## Evaluate on Warren data
-
-# In[12]:
-
-
-process_sentpair_dataset('warren.csv', 'sent_control', 'sent_no_violation')
-
-
-# In[13]:
-
-
-process_sentpair_dataset('warren.csv', 'sent_control', 'sent_violation')
-
-
-# ## Datasets from Ettinger 2020: CPRAG-34 and ROLE-88)
-
-# In[16]:
-
-
-process_sentpair_dataset('cprag34.csv', 'correct', 'incorrect')
-
-
-# In[14]:
-
-
-process_sentpair_dataset('role88.csv', 'correct', 'reversed')
+for taskname, sent_pair_set in sentgen.get_all_datasets().items():
+  process_sentpair_dataset(taskname, sent_pair_set.category, sent_pair_set.sent_pairs)
 

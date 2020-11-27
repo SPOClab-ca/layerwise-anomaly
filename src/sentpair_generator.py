@@ -1,6 +1,7 @@
 import os
 import collections
 import pandas as pd
+import jsonlines
 
 
 SentPairSet = collections.namedtuple('SentPairSet', 'category sent_pairs')
@@ -20,8 +21,46 @@ class SentPairGenerator():
     return [tuple(x) for x in df.to_numpy()]
 
 
+  def load_blimp(self, fname):
+    fname = os.path.join(self.data_dir, fname)
+    with jsonlines.open(fname) as reader:
+      lines = list(reader)
+
+    return [(l['sentence_good'], l['sentence_bad']) for l in lines]
+
+
   def get_all_datasets(self):
     datasets = {}
+
+    datasets['BLiMP-SubjVerb1'] = SentPairSet(
+      category='Morphosyntax',
+      sent_pairs=self.load_blimp('blimp/data/regular_plural_subject_verb_agreement_1.jsonl')
+    )
+
+    datasets['BLiMP-SubjVerb2'] = SentPairSet(
+      category='Morphosyntax',
+      sent_pairs=self.load_blimp('blimp/data/regular_plural_subject_verb_agreement_2.jsonl')
+    )
+
+    datasets['BLiMP-DetNoun1'] = SentPairSet(
+      category='Morphosyntax',
+      sent_pairs=self.load_blimp('blimp/data/determiner_noun_agreement_1.jsonl')
+    )
+
+    datasets['BLiMP-DetNoun2'] = SentPairSet(
+      category='Morphosyntax',
+      sent_pairs=self.load_blimp('blimp/data/determiner_noun_agreement_2.jsonl')
+    )
+
+    datasets['BLiMP-AnimacyPassive'] = SentPairSet(
+      category='Selectional',
+      sent_pairs=self.load_blimp('blimp/data/animate_subject_passive.jsonl')
+    )
+
+    datasets['BLiMP-AnimacyTransitive'] = SentPairSet(
+      category='Selectional',
+      sent_pairs=self.load_blimp('blimp/data/animate_subject_trans.jsonl')
+    )
 
     datasets['Pylkkanen'] = SentPairSet(
       category='Selectional',
