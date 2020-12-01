@@ -22,6 +22,8 @@ import src.anomaly_model
 get_ipython().run_line_magic('matplotlib', 'inline')
 get_ipython().run_line_magic('load_ext', 'autoreload')
 get_ipython().run_line_magic('autoreload', '2')
+pd.options.display.max_columns = 100
+pd.options.display.max_rows = 100
 
 
 # ## Pick random subset of sentences
@@ -81,23 +83,48 @@ def process_sentpair_dataset(taskname, category, sent_pairs):
   scores = []
   for layer in range(13):
     results = model.eval_sent_pairs(sent_pairs, layer)
-    scores.extend([{'layer': layer, 'score': r} for r in results])
+    scores.extend([{'category': category, 'taskname': taskname, 'layer': layer, 'score': r} for r in results])
   scores = pd.DataFrame(scores)
-  
-  plt.figure(figsize=(10, 5))
-  ax = sns.boxplot(x='layer', y='score', data=scores, color='lightblue')
-  ax.axhline(0, color='red', linestyle='dashed')
-  plt.ylim((-abs(scores.score.max()), abs(scores.score.max())))
-  plt.xticks(range(0, 13))
-  plt.title(f"{category} - {taskname}")
-  plt.xlabel('Layer')
-  plt.ylabel('GMM Score Difference')
-  plt.show()
+  return scores
 
 
 # In[7]:
 
 
+all_scores = []
 for taskname, sent_pair_set in sentgen.get_all_datasets().items():
-  process_sentpair_dataset(taskname, sent_pair_set.category, sent_pair_set.sent_pairs)
+  task_scores = process_sentpair_dataset(taskname, sent_pair_set.category, sent_pair_set.sent_pairs)
+  all_scores.append(task_scores)
+  
+  plt.figure(figsize=(10, 5))
+  ax = sns.boxplot(x='layer', y='score', data=task_scores, color='lightblue')
+  ax.axhline(0, color='red', linestyle='dashed')
+  plt.ylim((-abs(task_scores.score.max()), abs(task_scores.score.max())))
+  plt.xticks(range(0, 13))
+  plt.title(f"{sent_pair_set.category} - {taskname}")
+  plt.xlabel('Layer')
+  plt.ylabel('GMM Score Difference')
+  plt.show()
+all_scores = pd.concat(all_scores)
+
+
+# ## Bar plot of z-scores
+
+# In[8]:
+
+
+z_scores = all_scores.groupby(['category', 'taskname', 'layer'], sort=False).score   .aggregate(lambda x: np.mean(x) / np.std(x)).reset_index()
+
+z_scores['task'] = z_scores.apply(lambda r: f"{r['category']} - {r['taskname']}", axis=1)
+z_scores = z_scores[['task', 'layer', 'score']]
+
+
+# In[9]:
+
+
+g = sns.FacetGrid(z_scores, row="task", height=1.5, aspect=2.5)
+g.map_dataframe(sns.barplot, x="layer", y="score")
+g.set_axis_labels("", "Z-Score")
+g.set_titles(row_template="{row_name}")
+plt.show()
 
