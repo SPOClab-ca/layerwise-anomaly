@@ -19,11 +19,11 @@ class TestAnomalyModel(unittest.TestCase):
     assert len(all_tokens) == 2
     assert len(all_scores) == 2
 
-    assert all_tokens[0] == ['I', ' like', ' pigs', '.']
-    assert all_scores[0].shape == (13, 4)
+    assert all_tokens[0] == ['I', ' like', ' pigs']
+    assert all_scores[0].shape == (13, 3)
 
-    assert all_tokens[1] == ['My', ' pig', ' likes', ' to', ' eat', '.']
-    assert all_scores[1].shape == (13, 6)
+    assert all_tokens[1] == ['My', ' pig', ' likes', ' to', ' eat']
+    assert all_scores[1].shape == (13, 5)
 
 
   def test_eval_sent_pairs(self):

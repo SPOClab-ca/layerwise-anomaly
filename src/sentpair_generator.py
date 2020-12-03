@@ -30,6 +30,7 @@ class SentPairGenerator():
 
 
   def get_all_datasets(self):
+    """A hand-selected set of psycholinguistic pairs and BLiMP pairs"""
     datasets = {}
 
     datasets['BLiMP-SubjVerb1'] = SentPairSet(
@@ -86,5 +87,20 @@ class SentPairGenerator():
       category='Pragmatic',
       sent_pairs=self.get_csv_based_dataset('role88.csv', 'correct', 'reversed')
     )
+
+    return datasets
+
+
+  def get_blimp_all(self):
+    """All 67 of the BLiMP tasks"""
+    blimp_tasks = pd.read_csv(os.path.join(self.data_dir, 'blimp/raw_results/blimp_full_results_summary.csv'))
+    blimp_tasks = blimp_tasks.groupby('UID', sort=False).first().reset_index()
+
+    datasets = {}
+    for _, task in blimp_tasks.iterrows():
+      datasets[task['UID']] = SentPairSet(
+        category=task['linguistics_term'],
+        sent_pairs=self.load_blimp(f"blimp/data/{task['UID']}.jsonl")
+      )
 
     return datasets
