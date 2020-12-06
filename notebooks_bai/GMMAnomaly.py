@@ -88,7 +88,7 @@ def process_sentpair_dataset(taskname, category, sent_pairs):
   return scores
 
 
-# In[7]:
+# In[ ]:
 
 
 all_scores = []
@@ -110,21 +110,30 @@ all_scores = pd.concat(all_scores)
 
 # ## Bar plot of z-scores
 
-# In[8]:
+# In[ ]:
 
 
 z_scores = all_scores.groupby(['category', 'taskname', 'layer'], sort=False).score   .aggregate(lambda x: np.mean(x) / np.std(x)).reset_index()
 
 z_scores['task'] = z_scores.apply(lambda r: f"{r['category']} - {r['taskname']}", axis=1)
 z_scores = z_scores[['task', 'layer', 'score']]
+z_scores.to_csv('z_scores.csv')
 
 
-# In[9]:
+# In[ ]:
 
 
-g = sns.FacetGrid(z_scores, row="task", height=1.5, aspect=2.5)
+# Need to manually correct for an extremely large value in row 664, probably some sort of overflow
+z_scores = pd.read_csv('z_scores.csv')
+
+
+# In[ ]:
+
+
+g = sns.FacetGrid(z_scores, row="task", height=2, aspect=4.5)
 g.map_dataframe(sns.barplot, x="layer", y="score")
 g.set_axis_labels("", "Z-Score")
 g.set_titles(row_template="{row_name}")
+g.set(ylim=(-1.5, 3))
 plt.show()
 
