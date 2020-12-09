@@ -91,16 +91,32 @@ class SentPairGenerator():
     return datasets
 
 
-  def get_blimp_all(self):
-    """All 67 of the BLiMP tasks"""
+  def get_blimp_all(self, subtasks=True):
+    """Get all BLiMP tasks.
+    If subtasks is True, then return 67 tasks, one for each paradigm.
+    If subtasks is False, then return 12 tasks, grouping together paradigms by linguistic phenomenon.
+    """
     blimp_tasks = pd.read_csv(os.path.join(self.data_dir, 'blimp/raw_results/blimp_full_results_summary.csv'))
     blimp_tasks = blimp_tasks.groupby('UID', sort=False).first().reset_index()
 
     datasets = {}
-    for _, task in blimp_tasks.iterrows():
-      datasets[task['UID']] = SentPairSet(
-        category=task['linguistics_term'],
-        sent_pairs=self.load_blimp(f"blimp/data/{task['UID']}.jsonl")
-      )
+
+    if subtasks:
+      for _, task in blimp_tasks.iterrows():
+        datasets[task['UID']] = SentPairSet(
+          category=task['linguistics_term'],
+          sent_pairs=self.load_blimp(f"blimp/data/{task['UID']}.jsonl")
+        )
+
+    else:
+      grouped_sents = collections.defaultdict(list)
+      for _, task in blimp_tasks.iterrows():
+        grouped_sents[task['linguistics_term']].extend(self.load_blimp(f"blimp/data/{task['UID']}.jsonl"))
+
+      for task_name, task_sents in grouped_sents.items():
+        datasets[task_name] = SentPairSet(
+          category=task_name,
+          sent_pairs=task_sents
+        )
 
     return datasets

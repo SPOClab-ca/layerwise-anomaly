@@ -25,11 +25,20 @@ class TestSentpairGenerator(unittest.TestCase):
     assert datasets['BLiMP-SubjVerb1'].sent_pairs[0][1] == "Paula reference Robert."
 
 
-  def test_get_blimp_all(self):
+  def test_get_blimp_subtask(self):
     gen = src.sentpair_generator.SentPairGenerator(data_dir='./data')
-    datasets = gen.get_blimp_all()
+    datasets = gen.get_blimp_all(subtasks=True)
 
     assert len(datasets) == 67
     assert list(datasets.keys())[0] == 'anaphor_gender_agreement'
     assert datasets['anaphor_gender_agreement'].category == 'anaphor_agreement'
     assert len(datasets['anaphor_gender_agreement'].sent_pairs) == 1000
+
+
+  def test_get_blimp_no_subtask(self):
+    gen = src.sentpair_generator.SentPairGenerator(data_dir='./data')
+    datasets = gen.get_blimp_all(subtasks=False)
+
+    assert len(datasets) == 12
+    assert list(datasets.keys())[0] == 'anaphor_agreement'
+    assert len(datasets['anaphor_agreement'].sent_pairs) == 2000
