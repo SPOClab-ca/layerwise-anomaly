@@ -29,38 +29,26 @@ class SentPairGenerator():
     return [(l['sentence_good'], l['sentence_bad']) for l in lines]
 
 
-  def get_all_datasets(self):
+  def get_hand_selected(self):
     """A hand-selected set of psycholinguistic pairs and BLiMP pairs"""
     datasets = {}
 
-    datasets['BLiMP-SubjVerb1'] = SentPairSet(
+    datasets['BLiMP-SubjVerb'] = SentPairSet(
       category='Morphosyntax',
-      sent_pairs=self.load_blimp('blimp/data/regular_plural_subject_verb_agreement_1.jsonl')
+      sent_pairs=self.load_blimp('blimp/data/regular_plural_subject_verb_agreement_1.jsonl') + \
+                 self.load_blimp('blimp/data/regular_plural_subject_verb_agreement_2.jsonl')
     )
 
-    datasets['BLiMP-SubjVerb2'] = SentPairSet(
+    datasets['BLiMP-DetNoun'] = SentPairSet(
       category='Morphosyntax',
-      sent_pairs=self.load_blimp('blimp/data/regular_plural_subject_verb_agreement_2.jsonl')
+      sent_pairs=self.load_blimp('blimp/data/determiner_noun_agreement_1.jsonl') + \
+                 self.load_blimp('blimp/data/determiner_noun_agreement_2.jsonl')
     )
 
-    datasets['BLiMP-DetNoun1'] = SentPairSet(
-      category='Morphosyntax',
-      sent_pairs=self.load_blimp('blimp/data/determiner_noun_agreement_1.jsonl')
-    )
-
-    datasets['BLiMP-DetNoun2'] = SentPairSet(
-      category='Morphosyntax',
-      sent_pairs=self.load_blimp('blimp/data/determiner_noun_agreement_2.jsonl')
-    )
-
-    datasets['BLiMP-AnimacyPassive'] = SentPairSet(
+    datasets['BLiMP-Animacy'] = SentPairSet(
       category='Selectional',
-      sent_pairs=self.load_blimp('blimp/data/animate_subject_passive.jsonl')
-    )
-
-    datasets['BLiMP-AnimacyTransitive'] = SentPairSet(
-      category='Selectional',
-      sent_pairs=self.load_blimp('blimp/data/animate_subject_trans.jsonl')
+      sent_pairs=self.load_blimp('blimp/data/animate_subject_passive.jsonl') + \
+                 self.load_blimp('blimp/data/animate_subject_trans.jsonl')
     )
 
     datasets['Pylkkanen'] = SentPairSet(

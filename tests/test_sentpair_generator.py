@@ -5,7 +5,7 @@ class TestSentpairGenerator(unittest.TestCase):
 
   def test_get_csv_dataset(self):
     gen = src.sentpair_generator.SentPairGenerator(data_dir='./data')
-    datasets = gen.get_all_datasets()
+    datasets = gen.get_hand_selected()
 
     assert 'Pylkkanen' in datasets
     assert datasets['Pylkkanen'].category == 'Selectional'
@@ -16,13 +16,13 @@ class TestSentpairGenerator(unittest.TestCase):
 
   def test_get_blimp_dataset(self):
     gen = src.sentpair_generator.SentPairGenerator(data_dir='./data')
-    datasets = gen.get_all_datasets()
+    datasets = gen.get_hand_selected()
 
-    assert 'BLiMP-SubjVerb1' in datasets
-    assert datasets['BLiMP-SubjVerb1'].category == 'Morphosyntax'
-    assert len(datasets['BLiMP-SubjVerb1'].sent_pairs) == 1000
-    assert datasets['BLiMP-SubjVerb1'].sent_pairs[0][0] == "Paula references Robert."
-    assert datasets['BLiMP-SubjVerb1'].sent_pairs[0][1] == "Paula reference Robert."
+    assert 'BLiMP-SubjVerb' in datasets
+    assert datasets['BLiMP-SubjVerb'].category == 'Morphosyntax'
+    assert len(datasets['BLiMP-SubjVerb'].sent_pairs) == 2000
+    assert datasets['BLiMP-SubjVerb'].sent_pairs[0][0] == "Paula references Robert."
+    assert datasets['BLiMP-SubjVerb'].sent_pairs[0][1] == "Paula reference Robert."
 
 
   def test_get_blimp_subtask(self):
