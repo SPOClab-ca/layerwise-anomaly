@@ -45,6 +45,11 @@ class SentPairGenerator():
                  self.load_blimp('blimp/data/determiner_noun_agreement_2.jsonl')
     )
 
+    datasets['Osterhout-Nicol-Syntactic'] = SentPairSet(
+      category='Morphosyntax',
+      sent_pairs=self.get_csv_based_dataset('osterhout-nicol.csv', 'original_sentence', 'syntactic_anomaly')
+    )
+
     datasets['BLiMP-Animacy'] = SentPairSet(
       category='Selectional',
       sent_pairs=self.load_blimp('blimp/data/animate_subject_passive.jsonl') + \
@@ -61,6 +66,16 @@ class SentPairGenerator():
       sent_pairs=self.get_csv_based_dataset('warren.csv', 'sent_control', 'sent_violation')
     )
 
+    datasets['Osterhout-Nicol-Semantic'] = SentPairSet(
+      category='Selectional',
+      sent_pairs=self.get_csv_based_dataset('osterhout-nicol.csv', 'original_sentence', 'semantic_anomaly')
+    )
+
+    datasets['Osterhout-Mobley'] = SentPairSet(
+      category='Selectional',
+      sent_pairs=self.get_csv_based_dataset('osterhout-mobley.csv', 'sent_correct', 'sent_wrong')
+    )
+
     datasets['Warren-Pragmatic'] = SentPairSet(
       category='Pragmatic',
       sent_pairs=self.get_csv_based_dataset('warren.csv', 'sent_control', 'sent_no_violation')
@@ -74,6 +89,11 @@ class SentPairGenerator():
     datasets['ROLE-88'] = SentPairSet(
       category='Pragmatic',
       sent_pairs=self.get_csv_based_dataset('role88.csv', 'correct', 'reversed')
+    )
+
+    datasets['Urbach'] = SentPairSet(
+      category='Pragmatic',
+      sent_pairs=self.get_csv_based_dataset('urbach.csv', 'sent_correct', 'sent_wrong')
     )
 
     return datasets
