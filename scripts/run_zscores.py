@@ -29,6 +29,7 @@ parser.add_argument('--out', type=str, default='default')
 parser.add_argument('--bnc_path', type=str, default='data/bnc.pkl')
 
 # Model hyperparameters
+parser.add_argument('--model_name', type=str, default='roberta-base')
 parser.add_argument('--model_type', type=str, default='gmm')
 parser.add_argument('--num_gmm_sentences', type=int, default=1000)
 parser.add_argument('--n_components', type=int, default=1)
@@ -58,6 +59,7 @@ bnc_sentences = random.sample(bnc_sentences, args.num_gmm_sentences)
 print('Training anomaly model...')
 model = src.anomaly_model.AnomalyModel(
   bnc_sentences,
+  model_name=args.model_name,
   model_type=args.model_type,
   n_components=args.n_components,
   covariance_type=args.covariance_type,
