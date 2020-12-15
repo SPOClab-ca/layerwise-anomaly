@@ -3,7 +3,7 @@
 
 # # GMM Anomaly Detection in contextual tokens
 
-# In[1]:
+# In[ ]:
 
 
 import sys
@@ -28,7 +28,7 @@ pd.options.display.max_rows = 100
 
 # ## Pick random subset of sentences
 
-# In[2]:
+# In[ ]:
 
 
 with open('../data/bnc.pkl', 'rb') as f:
@@ -40,10 +40,10 @@ bnc_sentences = random.sample(bnc_sentences, 1000)
 
 # ## Plot of GMM score at each layer and word
 
-# In[3]:
+# In[ ]:
 
 
-model = src.anomaly_model.AnomalyModel(bnc_sentences)
+model = src.anomaly_model.AnomalyModel(bnc_sentences, model_name='xlnet-base-cased')
 
 
 # In[ ]:
@@ -64,22 +64,30 @@ def all_layer_scores(sent):
 
 all_layer_scores("The cats won't eating the food that Mary gives them.")
 
+
+# In[ ]:
+
+
+all_layer_scores("The boxes in the attic may still hold many old photographs and souvenirs.")
+all_layer_scores("The boxes in the attic may still find many old photographs and souvenirs.")
+
 all_layer_scores("Corey's hamster entertained a nearby backpack and filled it with sawdust.")
 # ## Evaluate on all datasets
 
-# In[5]:
+# In[ ]:
 
 
 sentgen = src.sentpair_generator.SentPairGenerator()
 
 
-# In[6]:
+# In[ ]:
 
 
 random.seed(12345)
 def process_sentpair_dataset(taskname, category, sent_pairs):
   # For debugging, take random 100
-  sent_pairs = random.sample(sent_pairs, 100)
+  if len(sent_pairs) > 100:
+    sent_pairs = random.sample(sent_pairs, 100)
   
   scores = []
   for layer in range(13):
@@ -93,7 +101,7 @@ def process_sentpair_dataset(taskname, category, sent_pairs):
 
 
 all_scores = []
-for taskname, sent_pair_set in sentgen.get_blimp_all(subtasks=False).items():
+for taskname, sent_pair_set in sentgen.get_hand_selected().items():
   task_scores = process_sentpair_dataset(taskname, sent_pair_set.category, sent_pair_set.sent_pairs)
   all_scores.append(task_scores)
   
@@ -112,7 +120,7 @@ all_scores = pd.concat(all_scores)
 
 # ## Bar plot of z-scores
 
-# In[8]:
+# In[ ]:
 
 
 z_scores = all_scores.groupby(['category', 'taskname', 'layer'], sort=False).score   .aggregate(lambda x: np.mean(x) / np.std(x)).reset_index()
@@ -122,7 +130,7 @@ z_scores = z_scores[['task', 'layer', 'score']]
 z_scores.to_csv('z_scores.csv')
 
 
-# In[9]:
+# In[ ]:
 
 
 # For blimp_all(subtasks=True), need to manually correct for an extremely large value in row 664,

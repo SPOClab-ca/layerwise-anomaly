@@ -17,6 +17,9 @@ class SentEncoder:
     self.auto_model = AutoModel.from_pretrained(model_name).to(device)
     self.pad_id = self.auto_tokenizer.pad_token_id
 
+    # Hack: XLNetModel returns outputs in a different order
+    self.hidden_output_ix = 1 if 'xlnet' in model_name else 2
+
 
   def contextual_token_vecs(self, sents):
     """Returns: (all_tokens, sentence_token_vecs) where:
@@ -34,7 +37,10 @@ class SentEncoder:
 
       with torch.no_grad():
         # (num_layers, batch_size, sent_length, 768)
-        vecs = self.auto_model(ids, attention_mask=(ids != self.pad_id), output_hidden_states=True)[2]
+        vecs = self.auto_model(
+          ids,
+          attention_mask=(ids != self.pad_id).float(),
+          output_hidden_states=True)[self.hidden_output_ix]
         vecs = np.array([v.detach().cpu().numpy() for v in vecs])
 
       for sent_ix in range(ids.shape[0]):
@@ -76,8 +82,14 @@ class SentEncoder:
 
       # Needed to avoid leaking cuda memory
       with torch.no_grad():
-        src_vecs = self.auto_model(src_ids, attention_mask=(src_ids != self.pad_id), output_hidden_states=True)[2][layer]
-        tgt_vecs = self.auto_model(tgt_ids, attention_mask=(tgt_ids != self.pad_id), output_hidden_states=True)[2][layer]
+        src_vecs = self.auto_model(
+          src_ids,
+          attention_mask=(src_ids != self.pad_id).float(),
+          output_hidden_states=True)[self.hidden_output_ix][layer]
+        tgt_vecs = self.auto_model(
+          tgt_ids,
+          attention_mask=(tgt_ids != self.pad_id).float(),
+          output_hidden_states=True)[self.hidden_output_ix][layer]
 
       src_sent_vecs = self._mean_without_pad(src_ids, src_vecs)
       tgt_sent_vecs = self._mean_without_pad(tgt_ids, tgt_vecs)

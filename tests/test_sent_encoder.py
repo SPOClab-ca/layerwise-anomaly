@@ -28,3 +28,13 @@ class TestSentEncoder(unittest.TestCase):
     assert all_vecs[0].shape == (2, 13, 768)
     assert all_vecs[1].shape == (3, 13, 768)
     assert all_tokens == [['Good', ' morning'], ['You', ' are', ' drunk']]
+
+
+  def test_xlnet(self):
+    xlnet_enc = src.sent_encoder.SentEncoder(model_name='xlnet-base-cased')
+    sents = ['Good morning', 'You are drunk']
+    all_tokens, all_vecs = xlnet_enc.contextual_token_vecs(sents)
+
+    assert len(all_vecs) == 2
+    assert all_vecs[0].shape == (2, 13, 768)
+    assert all_vecs[1].shape == (3, 13, 768)
