@@ -1,7 +1,6 @@
 import transformers
 from transformers import AutoTokenizer, AutoModel
 import numpy as np
-import pandas as pd
 import torch
 import string
 
@@ -10,10 +9,7 @@ device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cp
 class SentEncoder:
   def __init__(self, model_name='roberta-base'):
     self.model_name = model_name
-    if 'chinese' in model_name:
-      self.auto_tokenizer = transformers.BertTokenizer.from_pretrained(model_name)
-    else:
-      self.auto_tokenizer = AutoTokenizer.from_pretrained(model_name)
+    self.auto_tokenizer = AutoTokenizer.from_pretrained(model_name)
     self.auto_model = AutoModel.from_pretrained(model_name).to(device)
     self.pad_id = self.auto_tokenizer.pad_token_id
 
@@ -59,10 +55,3 @@ class SentEncoder:
         sentence_token_vecs.append(np.array(token_vecs))
 
     return all_tokens, sentence_token_vecs
-
-
-  def _mean_without_pad(self, batch_ids, batch_vecs):
-    """Must not include [PAD] tokens when averaging token embeddings"""
-    positions_not_pad = (batch_ids != self.auto_tokenizer.pad_token_id).to(float).unsqueeze(2)
-    batch_vecs = positions_not_pad * batch_vecs
-    return batch_vecs.sum(dim=1) / positions_not_pad.sum(dim=1)
