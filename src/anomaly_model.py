@@ -15,8 +15,11 @@ class AnomalyModel:
     self.enc = src.sent_encoder.SentEncoder(model_name=model_name)
     self.gmms = []
 
+    # Assumes base models have 12+1 layers, large models have 24+1
+    self.num_model_layers = 25 if 'large' in model_name else 13
+
     _, all_vecs = self.enc.contextual_token_vecs(train_sentences)
-    for layer in range(13):
+    for layer in range(self.num_model_layers):
       sent_vecs = np.vstack([vs[:,layer,:] for vs in all_vecs])
 
       if model_type == 'gmm':
@@ -43,7 +46,7 @@ class AnomalyModel:
       assert len(tokens) == vecs.shape[0]
       
       layer_scores = []
-      for layer in range(13):
+      for layer in range(self.num_model_layers):
         scores = self.gmms[layer].score_samples(vecs[:, layer, :])
         layer_scores.append(scores)
 

@@ -74,7 +74,7 @@ def process_sentpair_dataset(taskname, category, sent_pairs):
     sent_pairs = random.sample(sent_pairs, args.max_eval_sents)
   
   scores = []
-  for layer in range(13):
+  for layer in range(model.num_model_layers):
     results = model.eval_sent_pairs(sent_pairs, layer)
     scores.extend([{'category': category, 'taskname': taskname, 'layer': layer, 'score': r} for r in results])
   scores = pd.DataFrame(scores)
