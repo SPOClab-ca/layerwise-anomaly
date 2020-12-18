@@ -13,9 +13,6 @@ class SentEncoder:
     self.auto_model = AutoModel.from_pretrained(model_name).to(device)
     self.pad_id = self.auto_tokenizer.pad_token_id
 
-    # Hack: XLNetModel returns outputs in a different order
-    self.hidden_output_ix = 1 if 'xlnet' in model_name else 2
-
 
   def contextual_token_vecs(self, sents):
     """Returns: (all_tokens, sentence_token_vecs) where:
@@ -36,7 +33,7 @@ class SentEncoder:
         vecs = self.auto_model(
           ids,
           attention_mask=(ids != self.pad_id).float(),
-          output_hidden_states=True)[self.hidden_output_ix]
+          output_hidden_states=True)[2]
         vecs = np.array([v.detach().cpu().numpy() for v in vecs])
 
       for sent_ix in range(ids.shape[0]):
