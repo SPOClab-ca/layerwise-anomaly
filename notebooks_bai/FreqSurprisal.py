@@ -5,7 +5,7 @@
 # 
 # How sensitive are all the different layers to token frequency?
 
-# In[1]:
+# In[ ]:
 
 
 import sys
@@ -31,37 +31,38 @@ get_ipython().run_line_magic('autoreload', '2')
 
 # ## Load model
 
-# In[2]:
+# In[ ]:
 
 
 with open('../data/bnc.pkl', 'rb') as f:
   bnc_sentences = pickle.load(f)
 
 random.seed(12345)
-bnc_sentences = random.sample(bnc_sentences, 1000)
+bnc_sentences_train = random.sample(bnc_sentences, 5000)
+bnc_sentences_test = random.sample(bnc_sentences, 5000)
 
 
-# In[4]:
+# In[ ]:
 
 
-model = src.anomaly_model.AnomalyModel(bnc_sentences)
+model = src.anomaly_model.AnomalyModel(bnc_sentences_train, model_name='xlnet-base-cased')
 
 
 # ## Tabulate token frequencies
 
-# In[5]:
+# In[ ]:
 
 
-tokens, all_layer = model.gmm_score(bnc_sentences)
+tokens, all_layer = model.gmm_score(bnc_sentences_test)
 
 
-# In[6]:
+# In[ ]:
 
 
 freq_counter = Counter(itertools.chain.from_iterable(tokens))
 
 
-# In[7]:
+# In[ ]:
 
 
 freq_counter.most_common(10)
@@ -69,27 +70,28 @@ freq_counter.most_common(10)
 
 # ## Plot all layers
 
-# In[8]:
+# In[ ]:
 
 
 def plot_for_one_layer(layer):
   df = []
-  for sent_ix, sent in enumerate(tokens[:100]):
+  for sent_ix, sent in enumerate(tokens):
     for tok_ix, token in enumerate(sent):
       surprisal = all_layer[sent_ix][layer, tok_ix]
       logfreq = math.log(freq_counter[token])
       df.append({'token': token, 'logfreq': logfreq, 'surprisal': surprisal})
   df = pd.DataFrame(df)
   corr = scipy.stats.pearsonr(df.logfreq, df.surprisal)[0]
+  print(corr)
 
-  sns.regplot(x='logfreq', y='surprisal', data=df)
-  plt.title(f'Layer {layer}, pearson={corr:0.2f}')
-  plt.ylabel('Anomaly Score')
-  plt.xlabel('Log Frequency')
-  plt.show()
+  #sns.regplot(x='logfreq', y='surprisal', data=df)
+  #plt.title(f'Layer {layer}, pearson={corr:0.2f}')
+  #plt.ylabel('Anomaly Score')
+  #plt.xlabel('Log Frequency')
+  #plt.show()
 
 
-# In[9]:
+# In[ ]:
 
 
 for layer in range(13):
