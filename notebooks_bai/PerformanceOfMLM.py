@@ -21,8 +21,7 @@ from collections import defaultdict
 
 import torch
 import transformers
-from transformers import AutoTokenizer
-from transformers import AutoModelForMaskedLM
+from transformers import AutoTokenizer, XLNetLMHeadModel
 
 import src.sentpair_generator
 import src.anomaly_model
@@ -44,7 +43,7 @@ sentgen = src.sentpair_generator.SentPairGenerator()
 
 # ## Filter sentences that are in all of their vocab
 
-# In[4]:
+# In[3]:
 
 
 tok_roberta = AutoTokenizer.from_pretrained('roberta-base')
@@ -52,7 +51,7 @@ tok_bert = AutoTokenizer.from_pretrained('bert-base-uncased')
 tok_xlnet = AutoTokenizer.from_pretrained('xlnet-base-cased')
 
 
-# In[5]:
+# In[4]:
 
 
 # Return true if the list of tokens differs in exactly one place
@@ -68,7 +67,7 @@ def is_single_diff(toks1, toks2):
   return diff_toks == 1
 
 
-# In[6]:
+# In[5]:
 
 
 def works_for_model(tokenizer, sent1, sent2):
@@ -77,7 +76,7 @@ def works_for_model(tokenizer, sent1, sent2):
   return is_single_diff(toks1, toks2)
 
 
-# In[7]:
+# In[6]:
 
 
 sent_pairs = defaultdict(list)
@@ -96,7 +95,7 @@ from transformers import pipeline
 nlp = pipeline("fill-mask", model='bert-base-uncased')
 
 
-# In[9]:
+# In[ ]:
 
 
 def fill_one(sent1, sent2):
@@ -118,16 +117,58 @@ def fill_one(sent1, sent2):
   return res[0]['token'] == dtok1
 
 
-# In[10]:
+# In[ ]:
 
 
 def mlm_accuracy(sentpairs):
   res = [fill_one(s1, s2) for (s1, s2) in sentpairs]
   return sum(res) / len(sentpairs)
 
+for task_name, sents in sent_pairs.items():
+  print(task_name, mlm_accuracy(sents))
 
-# In[ ]:
 
+# ## XLNet needs to be done differently
+
+# In[7]:
+
+
+model_name = 'xlnet-base-cased'
+tokenizer = AutoTokenizer.from_pretrained(model_name)
+model = XLNetLMHeadModel.from_pretrained(model_name)
+
+
+# In[8]:
+
+
+def fill_one(sent1, sent2):
+  toks1 = tokenizer(sent1, add_special_tokens=False)['input_ids']
+  toks2 = tokenizer(sent2, add_special_tokens=False)['input_ids']
+
+  masked_toks = []
+  masked_ix = None
+  dtok1 = None
+  dtok2 = None
+  for ix in range(len(toks1)):
+    if toks1[ix] != toks2[ix]:
+      masked_toks.append(tokenizer.mask_token_id)
+      masked_ix = ix
+      dtok1 = toks1[ix]
+      dtok2 = toks2[ix]
+    else:
+      masked_toks.append(toks1[ix])
+
+  logit1 = model(torch.tensor([masked_toks])).logits[0, masked_ix, dtok1]
+  logit2 = model(torch.tensor([masked_toks])).logits[0, masked_ix, dtok2]
+  return bool(logit1 > logit2)
+
+
+# In[9]:
+
+
+def mlm_accuracy(sentpairs):
+  res = [fill_one(s1, s2) for (s1, s2) in sentpairs]
+  return sum(res) / len(sentpairs)
 
 for task_name, sents in sent_pairs.items():
   print(task_name, mlm_accuracy(sents))
