@@ -3,7 +3,7 @@
 
 # # GMM Anomaly Detection in contextual tokens
 
-# In[ ]:
+# In[1]:
 
 
 import sys
@@ -28,7 +28,7 @@ pd.options.display.max_rows = 100
 
 # ## Pick random subset of sentences
 
-# In[ ]:
+# In[2]:
 
 
 with open('../data/bnc.pkl', 'rb') as f:
@@ -40,27 +40,29 @@ bnc_sentences = random.sample(bnc_sentences, 1000)
 
 # ## Plot of GMM score at each layer and word
 
-# In[ ]:
+# In[3]:
 
 
-model = src.anomaly_model.AnomalyModel(bnc_sentences, model_name='xlnet-base-cased')
+model = src.anomaly_model.AnomalyModel(bnc_sentences, model_name='roberta-base')
 
 
-# In[ ]:
+# In[4]:
 
 
 def all_layer_scores(sent):
   tokens, all_layer = model.gmm_score([sent])
   tokens = tokens[0]
   all_layer = all_layer[0]
-  plt.figure(figsize=(8, 8))
-  plt.imshow(all_layer, origin='lower')
-  plt.xticks(range(len(tokens)), tokens, rotation='vertical')
-  plt.yticks(range(12), range(12))
+  plt.figure(figsize=(5, 5))
+  plt.imshow(all_layer, origin='lower', aspect=0.8, vmax=400)
+  plt.xticks(range(len(tokens)), tokens, rotation=60)
+  plt.yticks(range(13), range(13))
   plt.ylabel('Layer')
-  for (j,i),label in np.ndenumerate(all_layer):
-    plt.text(i, j, int(label), ha='center', va='center', color='white')
+  #for (j,i),label in np.ndenumerate(all_layer):
+    #plt.text(i, j, int(label), ha='center', va='center', color='white')
   plt.show()
+  #plt.tight_layout()
+  #plt.savefig('gmm_demo.pdf')
 
 all_layer_scores("The cats won't eating the food that Mary gives them.")
 
