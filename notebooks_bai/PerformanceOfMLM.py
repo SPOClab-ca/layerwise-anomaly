@@ -43,7 +43,7 @@ sentgen = src.sentpair_generator.SentPairGenerator()
 
 # ## Filter sentences that are in all of their vocab
 
-# In[3]:
+# In[11]:
 
 
 tok_roberta = AutoTokenizer.from_pretrained('roberta-base')
@@ -51,7 +51,7 @@ tok_bert = AutoTokenizer.from_pretrained('bert-base-uncased')
 tok_xlnet = AutoTokenizer.from_pretrained('xlnet-base-cased')
 
 
-# In[4]:
+# In[12]:
 
 
 # Return true if the list of tokens differs in exactly one place
@@ -67,7 +67,7 @@ def is_single_diff(toks1, toks2):
   return diff_toks == 1
 
 
-# In[5]:
+# In[13]:
 
 
 def works_for_model(tokenizer, sent1, sent2):
@@ -76,7 +76,7 @@ def works_for_model(tokenizer, sent1, sent2):
   return is_single_diff(toks1, toks2)
 
 
-# In[6]:
+# In[14]:
 
 
 sent_pairs = defaultdict(list)
@@ -84,6 +84,13 @@ for task_name, sent_pair_set in sentgen.get_hand_selected().items():
   for sent1, sent2 in sent_pair_set.sent_pairs:
     if works_for_model(tok_roberta, sent1, sent2) and         works_for_model(tok_bert, sent1, sent2) and        works_for_model(tok_xlnet, sent1, sent2):
       sent_pairs[task_name].append((sent1, sent2))
+
+
+# In[15]:
+
+
+for task_name, sent_pair_set in sent_pairs.items():
+  print(task_name, len(sent_pair_set))
 
 
 # ## Fill Mask Accuracy
@@ -163,7 +170,7 @@ def fill_one(sent1, sent2):
   return bool(logit1 > logit2)
 
 
-# In[9]:
+# In[ ]:
 
 
 def mlm_accuracy(sentpairs):
@@ -172,4 +179,66 @@ def mlm_accuracy(sentpairs):
 
 for task_name, sents in sent_pairs.items():
   print(task_name, mlm_accuracy(sents))
+
+
+# ## Try using Gaussian model on same data, use best layer for each model
+
+# In[17]:
+
+
+with open('../data/bnc.pkl', 'rb') as f:
+  bnc_sentences = pickle.load(f)
+
+random.seed(12345)
+bnc_sentences = random.sample(bnc_sentences, 1000)
+
+
+# In[57]:
+
+
+MODEL_NAME = 'bert-base-uncased'
+MODEL_LAYER = 9
+
+model = src.anomaly_model.AnomalyModel(bnc_sentences, model_name=MODEL_NAME)
+
+
+# In[58]:
+
+
+def process_sentpair_dataset(taskname, sent_pairs):
+  scores = []
+  for layer in [MODEL_LAYER]:
+    results = model.eval_sent_pairs(sent_pairs, layer)
+    scores.extend([{'taskname': taskname, 'layer': layer, 'score': r} for r in results])
+  scores = pd.DataFrame(scores)
+  return scores
+
+
+# In[59]:
+
+
+all_scores = []
+for taskname, sentpairs in sent_pairs.items():
+  task_scores = process_sentpair_dataset(taskname, sentpairs)
+  all_scores.append(task_scores)
+  
+# Role-88 is special...
+#taskname = 'ROLE-88'
+#sentpairs = sentgen.get_hand_selected()['ROLE-88']
+#task_scores = process_sentpair_dataset(taskname, sentpairs.sent_pairs)
+#all_scores.append(task_scores)
+  
+all_scores = pd.concat(all_scores)
+
+
+# In[60]:
+
+
+all_scores['Correct'] = all_scores.score > 0
+
+
+# In[61]:
+
+
+all_scores[['taskname', 'Correct']].groupby('taskname', sort=False).mean()
 
