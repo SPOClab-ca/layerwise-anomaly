@@ -46,34 +46,31 @@ bnc_sentences = random.sample(bnc_sentences, 1000)
 model = src.anomaly_model.AnomalyModel(bnc_sentences, model_name='roberta-base')
 
 
-# In[4]:
+# In[5]:
 
 
-def all_layer_scores(sent):
+def all_layer_scores(sent, savename=None):
   tokens, all_layer = model.gmm_score([sent])
   tokens = tokens[0]
   all_layer = all_layer[0]
   plt.figure(figsize=(5, 5))
-  plt.imshow(all_layer, origin='lower', aspect=0.8, vmax=400)
+  plt.imshow(all_layer, origin='lower', aspect=1, vmin=-700, vmax=200)
   plt.xticks(range(len(tokens)), tokens, rotation=60)
   plt.yticks(range(13), range(13))
   plt.ylabel('Layer')
   #for (j,i),label in np.ndenumerate(all_layer):
     #plt.text(i, j, int(label), ha='center', va='center', color='white')
-  plt.show()
-  #plt.tight_layout()
-  #plt.savefig('gmm_demo.pdf')
+  
+  if savename is not None:
+    plt.tight_layout()
+    plt.savefig(savename)
+  else:
+    plt.show()
 
-all_layer_scores("The cats won't eating the food that Mary gives them.")
+all_layer_scores("The cat won't eating the food", "gmm_demo_morphosyntax.pdf")
+all_layer_scores("The plane laughed at the runway", "gmm_demo_semantic.pdf")
 
 
-# In[ ]:
-
-
-all_layer_scores("The boxes in the attic may still hold many old photographs and souvenirs.")
-all_layer_scores("The boxes in the attic may still find many old photographs and souvenirs.")
-
-all_layer_scores("Corey's hamster entertained a nearby backpack and filled it with sawdust.")
 # ## Evaluate on all datasets
 
 # In[ ]:
