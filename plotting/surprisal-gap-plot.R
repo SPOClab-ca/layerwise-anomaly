@@ -18,7 +18,7 @@ ggplot(df, aes(x=layer, y=score, fill=type)) +
   scale_x_continuous(breaks=0:12) +
   scale_y_continuous(breaks=seq(-3, 3, 1)) +
   xlab("Layer") +
-  ylab("Z-Score") +
+  ylab("Surprisal Gap") +
   theme_bw() +
   theme(panel.grid.major=element_blank(),
         panel.grid.minor=element_blank(),

@@ -1,0 +1,157 @@
+type,task,layer,score
+Morphosyntax,BLiMP (Subject-Verb),0,0.005009542
+Morphosyntax,BLiMP (Subject-Verb),1,0.041092518
+Morphosyntax,BLiMP (Subject-Verb),2,0.065060628
+Morphosyntax,BLiMP (Subject-Verb),3,0.069595061
+Morphosyntax,BLiMP (Subject-Verb),4,0.169780979
+Morphosyntax,BLiMP (Subject-Verb),5,0.296936479
+Morphosyntax,BLiMP (Subject-Verb),6,0.220827198
+Morphosyntax,BLiMP (Subject-Verb),7,0.204221098
+Morphosyntax,BLiMP (Subject-Verb),8,0.141383097
+Morphosyntax,BLiMP (Subject-Verb),9,0.175133475
+Morphosyntax,BLiMP (Subject-Verb),10,0.123738187
+Morphosyntax,BLiMP (Subject-Verb),11,0.089717143
+Morphosyntax,BLiMP (Subject-Verb),12,-0.103144247
+Morphosyntax,BLiMP (Det-Noun),0,-0.06847854
+Morphosyntax,BLiMP (Det-Noun),1,0.152252847
+Morphosyntax,BLiMP (Det-Noun),2,0.237391249
+Morphosyntax,BLiMP (Det-Noun),3,0.303866368
+Morphosyntax,BLiMP (Det-Noun),4,0.564307791
+Morphosyntax,BLiMP (Det-Noun),5,0.786364431
+Morphosyntax,BLiMP (Det-Noun),6,0.572974573
+Morphosyntax,BLiMP (Det-Noun),7,0.439303563
+Morphosyntax,BLiMP (Det-Noun),8,0.295163612
+Morphosyntax,BLiMP (Det-Noun),9,0.261594155
+Morphosyntax,BLiMP (Det-Noun),10,0.209348972
+Morphosyntax,BLiMP (Det-Noun),11,0.314052983
+Morphosyntax,BLiMP (Det-Noun),12,0.106054399
+Morphosyntax,Osterhout and Nicol,0,-0.116100436
+Morphosyntax,Osterhout and Nicol,1,0.221441587
+Morphosyntax,Osterhout and Nicol,2,0.308493896
+Morphosyntax,Osterhout and Nicol,3,0.425815698
+Morphosyntax,Osterhout and Nicol,4,0.585140073
+Morphosyntax,Osterhout and Nicol,5,0.694884719
+Morphosyntax,Osterhout and Nicol,6,0.639251424
+Morphosyntax,Osterhout and Nicol,7,0.67324549
+Morphosyntax,Osterhout and Nicol,8,0.517169464
+Morphosyntax,Osterhout and Nicol,9,0.56589663
+Morphosyntax,Osterhout and Nicol,10,0.476905478
+Morphosyntax,Osterhout and Nicol,11,0.417201497
+Morphosyntax,Osterhout and Nicol,12,0.128797015
+Semantic,BLiMP (Animacy),0,-0.666403822
+Semantic,BLiMP (Animacy),1,0.668654016
+Semantic,BLiMP (Animacy),2,0.788540266
+Semantic,BLiMP (Animacy),3,0.807642134
+Semantic,BLiMP (Animacy),4,0.802058653
+Semantic,BLiMP (Animacy),5,0.760449289
+Semantic,BLiMP (Animacy),6,0.842287452
+Semantic,BLiMP (Animacy),7,0.864713691
+Semantic,BLiMP (Animacy),8,0.839715095
+Semantic,BLiMP (Animacy),9,0.824854346
+Semantic,BLiMP (Animacy),10,0.801593965
+Semantic,BLiMP (Animacy),11,0.780069899
+Semantic,BLiMP (Animacy),12,0.624382897
+Semantic,Pylkkänen and McElree,0,-0.324383311
+Semantic,Pylkkänen and McElree,1,0.352749946
+Semantic,Pylkkänen and McElree,2,0.370412748
+Semantic,Pylkkänen and McElree,3,0.368942202
+Semantic,Pylkkänen and McElree,4,0.5200618
+Semantic,Pylkkänen and McElree,5,0.265243836
+Semantic,Pylkkänen and McElree,6,0.345653869
+Semantic,Pylkkänen and McElree,7,0.266747015
+Semantic,Pylkkänen and McElree,8,0.24274167
+Semantic,Pylkkänen and McElree,9,0.242405398
+Semantic,Pylkkänen and McElree,10,0.241103077
+Semantic,Pylkkänen and McElree,11,0.217842791
+Semantic,Pylkkänen and McElree,12,0.487489457
+Semantic,Warren et al.,0,0.0810499
+Semantic,Warren et al.,1,-0.123842407
+Semantic,Warren et al.,2,-0.018517757
+Semantic,Warren et al.,3,-0.026530331
+Semantic,Warren et al.,4,0.011103438
+Semantic,Warren et al.,5,-0.069525633
+Semantic,Warren et al.,6,-0.004443342
+Semantic,Warren et al.,7,-0.007177381
+Semantic,Warren et al.,8,-0.098826516
+Semantic,Warren et al.,9,-0.028404625
+Semantic,Warren et al.,10,-0.072120108
+Semantic,Warren et al.,11,0.004611009
+Semantic,Warren et al.,12,-0.177743629
+Semantic,Osterhout and Nicol,0,0.097003172
+Semantic,Osterhout and Nicol,1,-0.027633785
+Semantic,Osterhout and Nicol,2,-0.003673586
+Semantic,Osterhout and Nicol,3,-0.008886585
+Semantic,Osterhout and Nicol,4,0.132932307
+Semantic,Osterhout and Nicol,5,0.023398722
+Semantic,Osterhout and Nicol,6,-0.021199348
+Semantic,Osterhout and Nicol,7,-0.012665312
+Semantic,Osterhout and Nicol,8,-0.039189706
+Semantic,Osterhout and Nicol,9,-0.045927279
+Semantic,Osterhout and Nicol,10,-0.092401725
+Semantic,Osterhout and Nicol,11,-0.043736188
+Semantic,Osterhout and Nicol,12,-0.213343648
+Semantic,Osterhout and Mobley,0,-0.080986364
+Semantic,Osterhout and Mobley,1,0.24903155
+Semantic,Osterhout and Mobley,2,0.296016673
+Semantic,Osterhout and Mobley,3,0.248360347
+Semantic,Osterhout and Mobley,4,0.436647635
+Semantic,Osterhout and Mobley,5,0.195391262
+Semantic,Osterhout and Mobley,6,0.106081926
+Semantic,Osterhout and Mobley,7,0.114261973
+Semantic,Osterhout and Mobley,8,0.066179399
+Semantic,Osterhout and Mobley,9,0.011409381
+Semantic,Osterhout and Mobley,10,0.028849863
+Semantic,Osterhout and Mobley,11,-0.033710451
+Semantic,Osterhout and Mobley,12,0.096469482
+Commonsense,Warren et al.,0,0.226943184
+Commonsense,Warren et al.,1,-0.329707892
+Commonsense,Warren et al.,2,-0.220120678
+Commonsense,Warren et al.,3,-0.184542992
+Commonsense,Warren et al.,4,-0.14199783
+Commonsense,Warren et al.,5,-0.311375333
+Commonsense,Warren et al.,6,-0.395620807
+Commonsense,Warren et al.,7,-0.348586181
+Commonsense,Warren et al.,8,-0.336005116
+Commonsense,Warren et al.,9,-0.325191722
+Commonsense,Warren et al.,10,-0.274574024
+Commonsense,Warren et al.,11,-0.144239995
+Commonsense,Warren et al.,12,-0.491684664
+Commonsense,Federmeier and Kutas,0,-0.113440785
+Commonsense,Federmeier and Kutas,1,0.076760278
+Commonsense,Federmeier and Kutas,2,0.115928059
+Commonsense,Federmeier and Kutas,3,0.107158779
+Commonsense,Federmeier and Kutas,4,0.068875464
+Commonsense,Federmeier and Kutas,5,0.142406326
+Commonsense,Federmeier and Kutas,6,0.074641091
+Commonsense,Federmeier and Kutas,7,0.081892503
+Commonsense,Federmeier and Kutas,8,-0.007368602
+Commonsense,Federmeier and Kutas,9,0.044194598
+Commonsense,Federmeier and Kutas,10,0.06784171
+Commonsense,Federmeier and Kutas,11,0.225417413
+Commonsense,Federmeier and Kutas,12,-0.092886657
+Commonsense,Chow et al.,0,0
+Commonsense,Chow et al.,1,-0.268082961
+Commonsense,Chow et al.,2,-0.034748728
+Commonsense,Chow et al.,3,0.03159799
+Commonsense,Chow et al.,4,-0.020573581
+Commonsense,Chow et al.,5,0.316726426
+Commonsense,Chow et al.,6,0.25570256
+Commonsense,Chow et al.,7,0.255381505
+Commonsense,Chow et al.,8,0.390229901
+Commonsense,Chow et al.,9,0.469266884
+Commonsense,Chow et al.,10,0.265036755
+Commonsense,Chow et al.,11,0.263321591
+Commonsense,Chow et al.,12,0.351150482
+Commonsense,Urbach and Kutas,0,-0.006803829
+Commonsense,Urbach and Kutas,1,0.035827012
+Commonsense,Urbach and Kutas,2,0.081192863
+Commonsense,Urbach and Kutas,3,0.040752598
+Commonsense,Urbach and Kutas,4,0.078680369
+Commonsense,Urbach and Kutas,5,0.061826124
+Commonsense,Urbach and Kutas,6,0.032356238
+Commonsense,Urbach and Kutas,7,0.03583083
+Commonsense,Urbach and Kutas,8,0.002931665
+Commonsense,Urbach and Kutas,9,0.024662525
+Commonsense,Urbach and Kutas,10,0.012089564
+Commonsense,Urbach and Kutas,11,-0.037184294
+Commonsense,Urbach and Kutas,12,0.050104722
