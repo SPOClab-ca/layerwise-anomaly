@@ -33,67 +33,67 @@ class SentPairGenerator():
     """A hand-selected set of psycholinguistic pairs and BLiMP pairs"""
     datasets = {}
 
-    datasets['BLiMP-SubjVerb'] = SentPairSet(
+    datasets['BLiMP (Subject-Verb)'] = SentPairSet(
       category='Morphosyntax',
       sent_pairs=self.load_blimp('blimp/data/regular_plural_subject_verb_agreement_1.jsonl') + \
                  self.load_blimp('blimp/data/regular_plural_subject_verb_agreement_2.jsonl')
     )
 
-    datasets['BLiMP-DetNoun'] = SentPairSet(
+    datasets['BLiMP (Det-Noun)'] = SentPairSet(
       category='Morphosyntax',
       sent_pairs=self.load_blimp('blimp/data/determiner_noun_agreement_1.jsonl') + \
                  self.load_blimp('blimp/data/determiner_noun_agreement_2.jsonl')
     )
 
-    datasets['Osterhout-Nicol-Syntactic'] = SentPairSet(
+    datasets['Osterhout and Nicol - Syntactic'] = SentPairSet(
       category='Morphosyntax',
       sent_pairs=self.get_csv_based_dataset('osterhout-nicol.csv', 'original_sentence', 'syntactic_anomaly')
     )
 
-    datasets['BLiMP-Animacy'] = SentPairSet(
-      category='Selectional',
+    datasets['BLiMP (Animacy)'] = SentPairSet(
+      category='Semantic',
       sent_pairs=self.load_blimp('blimp/data/animate_subject_passive.jsonl') + \
                  self.load_blimp('blimp/data/animate_subject_trans.jsonl')
     )
 
-    datasets['Pylkkanen'] = SentPairSet(
-      category='Selectional',
-      sent_pairs=self.get_csv_based_dataset('pylkkanen.csv', 'sent_control', 'sent_anomaly')
+    datasets['Pylkkanen and McElree'] = SentPairSet(
+      category='Semantic',
+      sent_pairs=self.get_csv_based_dataset('pylkkanen-mcelree.csv', 'sent_control', 'sent_anomaly')
     )
 
-    datasets['Warren-Selectional'] = SentPairSet(
-      category='Selectional',
-      sent_pairs=self.get_csv_based_dataset('warren.csv', 'sent_control', 'sent_violation')
+    datasets['Warren et al. - Selectional'] = SentPairSet(
+      category='Semantic',
+      sent_pairs=self.get_csv_based_dataset('warren-et-al.csv', 'sent_control', 'sent_violation')
     )
 
-    datasets['Osterhout-Nicol-Semantic'] = SentPairSet(
-      category='Selectional',
+    datasets['Osterhout and Nicol - Semantic'] = SentPairSet(
+      category='Semantic',
       sent_pairs=self.get_csv_based_dataset('osterhout-nicol.csv', 'original_sentence', 'semantic_anomaly')
     )
 
-    datasets['Osterhout-Mobley'] = SentPairSet(
-      category='Selectional',
+    datasets['Osterhout and Mobley'] = SentPairSet(
+      category='Semantic',
       sent_pairs=self.get_csv_based_dataset('osterhout-mobley.csv', 'sent_correct', 'sent_wrong')
     )
 
-    datasets['Warren-Pragmatic'] = SentPairSet(
-      category='Pragmatic',
-      sent_pairs=self.get_csv_based_dataset('warren.csv', 'sent_control', 'sent_no_violation')
+    datasets['Warren et al. - Pragmatic'] = SentPairSet(
+      category='Commonsense',
+      sent_pairs=self.get_csv_based_dataset('warren-et-al.csv', 'sent_control', 'sent_no_violation')
     )
     
-    datasets['CPRAG-34'] = SentPairSet(
-      category='Pragmatic',
-      sent_pairs=self.get_csv_based_dataset('cprag34.csv', 'correct', 'incorrect')
+    datasets['Federmeier and Kutas'] = SentPairSet(
+      category='Commonsense',
+      sent_pairs=self.get_csv_based_dataset('federmeier-kutas.csv', 'correct', 'incorrect')
     )
 
-    datasets['ROLE-88'] = SentPairSet(
-      category='Pragmatic',
-      sent_pairs=self.get_csv_based_dataset('role88.csv', 'correct', 'reversed')
+    datasets['Chow et al.'] = SentPairSet(
+      category='Commonsense',
+      sent_pairs=self.get_csv_based_dataset('chow-et-al.csv', 'correct', 'reversed')
     )
 
-    datasets['Urbach'] = SentPairSet(
-      category='Pragmatic',
-      sent_pairs=self.get_csv_based_dataset('urbach.csv', 'sent_correct', 'sent_wrong')
+    datasets['Urbach and Kutas'] = SentPairSet(
+      category='Commonsense',
+      sent_pairs=self.get_csv_based_dataset('urbach-kutas.csv', 'sent_correct', 'sent_wrong')
     )
 
     return datasets
