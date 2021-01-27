@@ -117,16 +117,16 @@ for taskname, sent_pair_set in sentgen.get_hand_selected().items():
 all_scores = pd.concat(all_scores)
 
 
-# ## Bar plot of z-scores
+# ## Bar plot of surprisal gaps
 
 # In[ ]:
 
 
-z_scores = all_scores.groupby(['category', 'taskname', 'layer'], sort=False).score   .aggregate(lambda x: np.mean(x) / np.std(x)).reset_index()
+surprisal_gaps = all_scores.groupby(['category', 'taskname', 'layer'], sort=False).score   .aggregate(lambda x: np.mean(x) / np.std(x)).reset_index()
 
-z_scores['task'] = z_scores.apply(lambda r: f"{r['category']} - {r['taskname']}", axis=1)
-z_scores = z_scores[['task', 'layer', 'score']]
-z_scores.to_csv('z_scores.csv')
+surprisal_gaps['task'] = surprisal_gaps.apply(lambda r: f"{r['category']} - {r['taskname']}", axis=1)
+surprisal_gaps = surprisal_gaps[['task', 'layer', 'score']]
+surprisal_gaps.to_csv('surprisal_gaps.csv')
 
 
 # In[ ]:
@@ -134,15 +134,15 @@ z_scores.to_csv('z_scores.csv')
 
 # For blimp_all(subtasks=True), need to manually correct for an extremely large value in row 664,
 # probably some sort of overflow.
-z_scores = pd.read_csv('z_scores.csv')
+surprisal_gaps = pd.read_csv('surprisal_gaps.csv')
 
 
 # In[ ]:
 
 
-g = sns.FacetGrid(z_scores, row="task", height=2, aspect=4.5)
+g = sns.FacetGrid(surprisal_gaps, row="task", height=2, aspect=4.5)
 g.map_dataframe(sns.barplot, x="layer", y="score")
-g.set_axis_labels("", "Z-Score")
+g.set_axis_labels("", "Surprisal Gap")
 g.set_titles(row_template="{row_name}")
 g.set(ylim=(-1.5, 3))
 plt.show()

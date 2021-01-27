@@ -1,10 +1,10 @@
 """
-Train Gaussian model and calculate z-scores for task
+Train Gaussian model and calculate surprisal gaps for task
 
 Example usage:
-PYTHONPATH=. time python scripts/run_zscores.py \
+PYTHONPATH=. time python scripts/run_susprisal_gaps.py \
   --bnc_path=data/bnc.pkl \
-  --out=zscores
+  --out=surprisal_gaps
 """
 import argparse
 import pickle
@@ -92,25 +92,25 @@ else:
   assert(False)
 
 
-# Process all datasets and calculate z-scores
+# Process all datasets and calculate surprisal gaps
 all_scores = []
 for taskname, sent_pair_set in eval_dataset.items():
   task_scores = process_sentpair_dataset(taskname, sent_pair_set.category, sent_pair_set.sent_pairs)
   all_scores.append(task_scores)
 all_scores = pd.concat(all_scores)
 
-z_scores = all_scores.groupby(['category', 'taskname', 'layer'], sort=False).score \
+surprisal_gaps = all_scores.groupby(['category', 'taskname', 'layer'], sort=False).score \
   .aggregate(lambda x: np.mean(x) / np.std(x)).reset_index()
 
-z_scores['task'] = z_scores.apply(lambda r: f"{r['category']} - {r['taskname']}", axis=1)
-z_scores = z_scores[['task', 'layer', 'score']]
-z_scores.to_csv(f'{args.out}.csv', index=False)
+surprisal_gaps['task'] = surprisal_gaps.apply(lambda r: f"{r['category']} - {r['taskname']}", axis=1)
+surprisal_gaps = surprisal_gaps[['task', 'layer', 'score']]
+surprisal_gaps.to_csv(f'{args.out}.csv', index=False)
 
 
 # Save plots
-g = sns.FacetGrid(z_scores, row="task", height=2, aspect=4.5)
+g = sns.FacetGrid(surprisal_gaps, row="task", height=2, aspect=4.5)
 g.map_dataframe(sns.barplot, x="layer", y="score")
-g.set_axis_labels("", "Z-Score")
+g.set_axis_labels("", "Surprisal Gap")
 g.set_titles(row_template="{row_name}")
 g.set(ylim=(-1.5, 3))
 plt.savefig(f'{args.out}.png')
