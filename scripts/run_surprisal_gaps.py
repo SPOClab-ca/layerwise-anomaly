@@ -2,7 +2,7 @@
 Train Gaussian model and calculate surprisal gaps for task
 
 Example usage:
-PYTHONPATH=. time python scripts/run_susprisal_gaps.py \
+PYTHONPATH=. time python scripts/run_surprisal_gaps.py \
   --bnc_path=data/bnc.pkl \
   --out=surprisal_gaps
 """
