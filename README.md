@@ -34,6 +34,37 @@ The project was developed with the following library versions. Running with othe
 
 Todo
 
+## GMM experiments on BLiMP (Figure 2 and Appendix A)
+
+```
+PYTHONPATH=. time python scripts/blimp_anomaly.py \
+  --bnc_path=data/bnc.pkl \
+  --blimp_path=data/blimp/data/ \
+  --out=blimp_result
+```
+
+## Frequency correlation (Figure 3)
+
+Run the `notebooks/FreqSurprisal.ipynb` notebook.
+
+## Surprisal gap experiments (Figure 4)
+
+```
+PYTHONPATH=. time python scripts/run_surprisal_gaps.py \
+  --bnc_path=data/bnc.pkl \
+  --out=surprisal_gaps
+```
+
+## Accuracy scores (Table 2)
+
+```
+PYTHONPATH=. time python scripts/run_accuracy.py \
+  --model_name=roberta-base \
+  --anomaly_model=gmm
+```
+
 ## Run unit tests
 
-`PYTHONPATH=. pytest tests`
+```
+PYTHONPATH=. pytest tests
+```
