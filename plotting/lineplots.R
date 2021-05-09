@@ -1,6 +1,7 @@
 library(tidyverse)
 library(ggplot2)
 
+# Figure 2b in paper
 {
   df <- read_csv("layer-accuracy.csv")
   
@@ -26,6 +27,7 @@ library(ggplot2)
   ggsave("layer-accuracy.pdf", width=5, height=3)
 }
 
+# Figure 3 in paper
 {
   df <- read_csv("freq-correlation.csv")
   
@@ -51,6 +53,7 @@ library(ggplot2)
   ggsave("freq-correlation.pdf", width=5, height=3)
 }
 
+# Figure 2a in paper
 {
   df <- read_csv("num-sent.csv")
   

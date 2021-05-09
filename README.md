@@ -18,7 +18,19 @@ Li, B., Zhu, Z., Thomas, G., Xu, Y., and Rudzicz, F. (2021) How is BERT surprise
 }
 ```
 
-## Instructions to run
+## Dependencies
+
+The project was developed with the following library versions. Running with other versions may crash or produce incorrect results.
+
+* Python 3.7.5
+* CUDA Version: 11.0
+* torch==1.7.1
+* transformers==4.5.1
+* numpy==1.19.0
+* pandas==0.25.3
+* scikit-learn==0.22
+
+## Setup Instructions
 
 Todo
 

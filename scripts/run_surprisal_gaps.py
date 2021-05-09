@@ -1,5 +1,5 @@
 """
-Train Gaussian model and calculate surprisal gaps for task
+Train Gaussian model and calculate surprisal gaps for task (Figure 4 in paper).
 
 Example usage:
 PYTHONPATH=. time python scripts/run_surprisal_gaps.py \

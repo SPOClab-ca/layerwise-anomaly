@@ -1,5 +1,5 @@
 """
-Run GMM on BLiMP syntactic minimal pairs.
+Run GMM on BLiMP syntactic minimal pairs (Figure 2 and Appendix A in paper).
 
 Example usage:
 PYTHONPATH=. time python scripts/blimp_anomaly.py \

@@ -1,9 +1,9 @@
 """
-Evaluate the accuracy of MLM on all tasks using specified LM
+Evaluate the accuracy of MLM on all tasks using specified LM (Table 2 in paper).
 
 Example usage:
 PYTHONPATH=. time python scripts/mlm_accuracy.py \
-  model_name=roberta-base
+  --model_name=roberta-base
 """
 import argparse
 from collections import defaultdict
@@ -15,7 +15,10 @@ from transformers import pipeline
 import src.sentpair_generator
 
 parser = argparse.ArgumentParser()
+
+# roberta-base, bert-base-uncased, xlnet-base-cased
 parser.add_argument('--model_name', type=str, default='roberta-base')
+
 args = parser.parse_args()
 
 
@@ -84,5 +87,9 @@ def mlm_accuracy(sentpairs):
   res = [fill_one(s1, s2) for (s1, s2) in sentpairs]
   return sum(res) / len(sentpairs)
 
-for task_name, sents in sent_pairs.items():
-  print(task_name, mlm_accuracy(sents))
+
+def main():
+  for task_name, sents in sent_pairs.items():
+    print(task_name, mlm_accuracy(sents))
+
+main()
