@@ -32,7 +32,10 @@ The project was developed with the following library versions. Running with othe
 
 ## Setup Instructions
 
-Todo
+1. Clone this repo: `git clone https://github.com/SPOClab-ca/layerwise-anomaly`
+2. Download BNC Baby (4m word sample) from [this link](http://www.natcorp.ox.ac.uk/) and extract into `data/bnc/`
+3. Run BNC preprocessing script: `python scripts/process_bnc.py --bnc_dir=data/bnc/download/Texts --to=data/bnc.pkl`
+4. Clone BLiMP repo: `cd data && git clone https://github.com/alexwarstadt/blimp`
 
 ## GMM experiments on BLiMP (Figure 2 and Appendix A)
 

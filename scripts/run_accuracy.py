@@ -2,7 +2,7 @@
 Evaluate the accuracy of MLM/GMM on all tasks using specified LM (Table 2 in paper).
 
 Example usage:
-PYTHONPATH=. time python scripts/mlm_accuracy.py \
+PYTHONPATH=. time python scripts/run_accuracy.py \
   --model_name=roberta-base \
   --anomaly_model=gmm
 """
