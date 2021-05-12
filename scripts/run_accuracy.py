@@ -10,15 +10,16 @@ import argparse
 from collections import defaultdict
 import pickle
 import random
+import torch
 import transformers
-from transformers import AutoTokenizer
+from transformers import AutoTokenizer, XLNetLMHeadModel
 from transformers import pipeline
 
 import src.sentpair_generator
 import src.anomaly_model
 
 
-BEST_LAYER = {
+BEST_LAYER_FOR_GMM = {
   'roberta-base': 11,
   'bert-base-uncased': 9,
   'xlnet-base-cased': 6,
@@ -66,30 +67,53 @@ def get_common_sentences():
   return sent_pairs
 
 
+def get_masked_sequence(tokenizer, sent1, sent2):
+  """Given a sentence pair that differ on exactly one token, return the token sequence
+  with [MASK] token, index of mask token, and the two different tokens.
+  """
+  toks1 = tokenizer(sent1, add_special_tokens=False)['input_ids']
+  toks2 = tokenizer(sent2, add_special_tokens=False)['input_ids']
+
+  seq_with_mask = []
+  masked_ix = None
+  dtok1 = None
+  dtok2 = None
+  for ix in range(len(toks1)):
+    if toks1[ix] != toks2[ix]:
+      # Sequence is different here, so replace with [MASK].
+      seq_with_mask.append(tokenizer.mask_token_id)
+      masked_ix = ix
+      dtok1 = toks1[ix]
+      dtok2 = toks2[ix]
+    else:
+      seq_with_mask.append(toks1[ix])
+
+  return seq_with_mask, masked_ix, dtok1, dtok2
+
+
 def run_mlm_mask_accuracy(model_name):
-  nlp = pipeline("fill-mask", model=model_name)
+  if 'bert' in model_name: # BERT or RoBERTa
+    nlp = pipeline("fill-mask", model=model_name)
+    tokenizer = nlp.tokenizer
+  else: # XLNet
+    tokenizer = AutoTokenizer.from_pretrained(model_name)
+    model = XLNetLMHeadModel.from_pretrained(model_name)
 
-  def fill_one(sent1, sent2):
-    toks1 = nlp.tokenizer(sent1, add_special_tokens=False)['input_ids']
-    toks2 = nlp.tokenizer(sent2, add_special_tokens=False)['input_ids']
+  # Make binary choice for a single sentence pair
+  def mlm_sentence_pair(sent1, sent2):
+    masked_toks, masked_ix, dtok1, dtok2 = get_masked_sequence(tokenizer, sent1, sent2)
 
-    masked_toks = []
-    dtok1 = None
-    dtok2 = None
-    for ix in range(len(toks1)):
-      if toks1[ix] != toks2[ix]:
-        masked_toks.append(nlp.tokenizer.mask_token_id)
-        dtok1 = toks1[ix]
-        dtok2 = toks2[ix]
-      else:
-        masked_toks.append(toks1[ix])
-
-    res = nlp(nlp.tokenizer.decode(masked_toks), targets=[nlp.tokenizer.decode(dtok1), nlp.tokenizer.decode(dtok2)])
-    return res[0]['token'] == dtok1
+    if 'bert' in model_name: # BERT or RoBERTa
+      res = nlp(tokenizer.decode(masked_toks), targets=[tokenizer.decode(dtok1), tokenizer.decode(dtok2)])
+      return res[0]['token'] == dtok1
+    else: # XLNet
+      logit1 = model(torch.tensor([masked_toks])).logits[0, masked_ix, dtok1]
+      logit2 = model(torch.tensor([masked_toks])).logits[0, masked_ix, dtok2]
+      return bool(logit1 > logit2)
 
   sent_pairs = get_common_sentences()
   for task_name, sents in sent_pairs.items():
-    res = [fill_one(s1, s2) for (s1, s2) in sents]
+    res = [mlm_sentence_pair(s1, s2) for (s1, s2) in sents]
     acc = sum(res) / len(sents)
     print(task_name, acc)
 
@@ -129,7 +153,7 @@ def main():
   if args.anomaly_model == 'mlm-mask':
     run_mlm_mask_accuracy(args.model_name)
   elif args.anomaly_model == 'gmm':
-    run_gmm_accuracy(args.model_name, BEST_LAYER[args.model_name])
+    run_gmm_accuracy(args.model_name, BEST_LAYER_FOR_GMM[args.model_name])
   else:
     raise AssertionError("Not supported")
 
