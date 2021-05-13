@@ -12,8 +12,7 @@ import pickle
 import random
 import torch
 import transformers
-from transformers import AutoTokenizer, XLNetLMHeadModel
-from transformers import pipeline
+from transformers import AutoTokenizer, AutoModelForMaskedLM, XLNetLMHeadModel
 
 import src.sentpair_generator
 import src.anomaly_model
@@ -71,8 +70,8 @@ def get_masked_sequence(tokenizer, sent1, sent2):
   """Given a sentence pair that differ on exactly one token, return the token sequence
   with [MASK] token, index of mask token, and the two different tokens.
   """
-  toks1 = tokenizer(sent1, add_special_tokens=False)['input_ids']
-  toks2 = tokenizer(sent2, add_special_tokens=False)['input_ids']
+  toks1 = tokenizer(sent1)['input_ids']
+  toks2 = tokenizer(sent2)['input_ids']
 
   seq_with_mask = []
   masked_ix = None
@@ -92,24 +91,21 @@ def get_masked_sequence(tokenizer, sent1, sent2):
 
 
 def run_mlm_mask_accuracy(model_name):
-  if 'bert' in model_name: # BERT or RoBERTa
-    nlp = pipeline("fill-mask", model=model_name)
-    tokenizer = nlp.tokenizer
-  else: # XLNet
-    tokenizer = AutoTokenizer.from_pretrained(model_name)
+  tokenizer = AutoTokenizer.from_pretrained(model_name)
+
+  # These do the same thing, except XLNet is a less popular model so it's not supported by
+  # all AutoModel variants.
+  if 'xlnet' in model_name:
     model = XLNetLMHeadModel.from_pretrained(model_name)
+  else:
+    model = AutoModelForMaskedLM.from_pretrained(model_name)
 
   # Make binary choice for a single sentence pair
   def mlm_sentence_pair(sent1, sent2):
     masked_toks, masked_ix, dtok1, dtok2 = get_masked_sequence(tokenizer, sent1, sent2)
-
-    if 'bert' in model_name: # BERT or RoBERTa
-      res = nlp(tokenizer.decode(masked_toks), targets=[tokenizer.decode(dtok1), tokenizer.decode(dtok2)])
-      return res[0]['token'] == dtok1
-    else: # XLNet
-      logit1 = model(torch.tensor([masked_toks])).logits[0, masked_ix, dtok1]
-      logit2 = model(torch.tensor([masked_toks])).logits[0, masked_ix, dtok2]
-      return bool(logit1 > logit2)
+    logit1 = model(torch.tensor([masked_toks])).logits[0, masked_ix, dtok1]
+    logit2 = model(torch.tensor([masked_toks])).logits[0, masked_ix, dtok2]
+    return bool(logit1 > logit2)
 
   sent_pairs = get_common_sentences()
   for task_name, sents in sent_pairs.items():
