@@ -46,7 +46,7 @@ PYTHONPATH=. time python scripts/blimp_anomaly.py \
   --out=blimp_result
 ```
 
-## Frequency correlation (Figure 3)
+## Frequency correlation (Figure 3 and Appendix B)
 
 Run the `notebooks/FreqSurprisal.ipynb` notebook.
 

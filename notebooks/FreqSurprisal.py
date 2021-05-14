@@ -72,7 +72,7 @@ freq_counter.most_common(10)
 
 # ## Plot frequency vs anomaly scores (Figure 3 in paper)
 
-# In[7]:
+# In[ ]:
 
 
 def plot_for_one_layer(layer):
@@ -100,7 +100,7 @@ for layer in range(13):
   plot_for_one_layer(layer)
 
 
-# ## Plot PCA/t-SNE of rare tokens (not in paper)
+# ## Plot PCA/t-SNE of rare tokens (Appendix B)
 
 # In[3]:
 
@@ -110,22 +110,22 @@ all_tokens, all_vecs = enc.contextual_token_vecs(random.sample(bnc_sentences_tes
 freq_counter = Counter(itertools.chain.from_iterable(all_tokens))
 
 
-# In[20]:
+# In[28]:
 
 
-layer = 1
+layer = 10
 pca_model = sklearn.decomposition.PCA(n_components=50)
 pca_vecs = pca_model.fit_transform(np.vstack(all_vecs)[:, layer, :])
 
 
-# In[ ]:
+# In[29]:
 
 
-tsne_model = sklearn.manifold.TSNE(n_components=2, n_jobs=-1, verbose=10)
-tsne_vecs = tsne_model.fit_transform(pca_vecs)
+#tsne_model = sklearn.manifold.TSNE(n_components=2, n_jobs=-1, verbose=10)
+#tsne_vecs = tsne_model.fit_transform(pca_vecs)
 
 
-# In[22]:
+# In[30]:
 
 
 df = []
@@ -133,22 +133,31 @@ combined_ix = 0
 for sent_ix, sent in enumerate(all_tokens):
   for tok_ix, token in enumerate(sent):
     logfreq = math.log(freq_counter[token])
-    dim1 = tsne_vecs[combined_ix, 0]
-    dim2 = tsne_vecs[combined_ix, 1]
+    dim1 = pca_vecs[combined_ix, 0]
+    dim2 = pca_vecs[combined_ix, 1]
     df.append({'token': token, 'logfreq': logfreq, 'dim1': dim1, 'dim2': dim2})
     combined_ix += 1
 df = pd.DataFrame(df)
 
 
-# In[23]:
+# In[31]:
 
 
-df['rare'] = df.logfreq < df.logfreq.quantile(0.2)
+df['rare'] = np.where(df.logfreq < df.logfreq.quantile(0.2), "Rare", "Frequent")
 
 
-# In[24]:
+# In[32]:
 
 
-sns.scatterplot(x=df.dim1, y=df.dim2, hue=df.rare)
+sns.set(rc={'figure.figsize':(4, 3.5)})
+df_plot = df.sample(3000)
+g = sns.scatterplot(x=df_plot.dim1, y=df_plot.dim2, hue=df.rare, linewidth=0, s=10)
+g.axes.xaxis.set_visible(False)
+g.axes.yaxis.set_visible(False)
+g.legend_.set_title(None)
+plt.title(f"Layer: {layer}")
+plt.xlabel("")
+plt.ylabel("")
+plt.savefig(f"freq-l{layer}.png", dpi=120)
 plt.show()
 
