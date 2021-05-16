@@ -110,7 +110,7 @@ all_tokens, all_vecs = enc.contextual_token_vecs(random.sample(bnc_sentences_tes
 freq_counter = Counter(itertools.chain.from_iterable(all_tokens))
 
 
-# In[28]:
+# In[4]:
 
 
 layer = 10
@@ -118,14 +118,14 @@ pca_model = sklearn.decomposition.PCA(n_components=50)
 pca_vecs = pca_model.fit_transform(np.vstack(all_vecs)[:, layer, :])
 
 
-# In[29]:
+# In[5]:
 
 
 #tsne_model = sklearn.manifold.TSNE(n_components=2, n_jobs=-1, verbose=10)
 #tsne_vecs = tsne_model.fit_transform(pca_vecs)
 
 
-# In[30]:
+# In[6]:
 
 
 df = []
@@ -140,24 +140,28 @@ for sent_ix, sent in enumerate(all_tokens):
 df = pd.DataFrame(df)
 
 
-# In[31]:
+# In[7]:
 
 
 df['rare'] = np.where(df.logfreq < df.logfreq.quantile(0.2), "Rare", "Frequent")
 
 
-# In[32]:
+# In[8]:
 
 
 sns.set(rc={'figure.figsize':(4, 3.5)})
-df_plot = df.sample(3000)
-g = sns.scatterplot(x=df_plot.dim1, y=df_plot.dim2, hue=df.rare, linewidth=0, s=10)
+df_plot = df.sample(1500)
+g = sns.scatterplot(x=df_plot.dim1, y=df_plot.dim2, hue=df.rare, linewidth=0, s=20)
 g.axes.xaxis.set_visible(False)
 g.axes.yaxis.set_visible(False)
 g.legend_.set_title(None)
 plt.title(f"Layer: {layer}")
 plt.xlabel("")
 plt.ylabel("")
-plt.savefig(f"freq-l{layer}.png", dpi=120)
+plt.savefig(f"freq-l{layer}.pdf", bbox_inches='tight')
 plt.show()
 
+
+# Command to combine pdfs:
+# 
+# ```pdfjam freq-l1.pdf freq-l4.pdf freq-l7.pdf freq-l10.pdf --nup 1x4 --outfile freq-4layer.pdf```
